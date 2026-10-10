@@ -1,4 +1,7 @@
-/* Test-only: browser layout harness cannot run an Android runtime. Not used in APK preparation or Android instrumentation. */
+/* Test-only transformation for browser CSS checks. It is never called by native build preparation or Android instrumentation. */
 'use strict';
-const fs=require('node:fs');const original=fs.readFileSync;
-fs.readFileSync=function(file,...args){const value=original.call(this,file,...args);if(String(file).replaceAll('\\','/').endsWith('/native/www/native-entry.js')){const text=String(value).replace('if (!Capacitor.isNativePlatform()) throw new Error("This bundle requires the installed Android app.");','/* Browser-only visual fixture; real APK guard remains unchanged. */');return Buffer.isBuffer(value)?Buffer.from(text):text;}return value;};
+module.exports=function browserLayoutBundle(text){
+ const guard='if (!Capacitor.isNativePlatform()) throw new Error("This bundle requires the installed Android app.");';
+ if(!String(text).includes(guard))throw new Error('Native runtime guard changed; review this isolated browser fixture.');
+ return String(text).replace(guard,'/* Browser-only layout fixture. The real APK retains its Android runtime guard. */');
+};
