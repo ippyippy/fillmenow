@@ -1,4 +1,4 @@
-/* Native-only disclosure styling; preserves the complete existing access warning and filter handlers. */
+/* Native-only disclosures. Existing access warnings and map attribution remain available. */
 (function(){'use strict';
 function update(){
  const note=document.getElementById('truckAccessNotice');if(!note)return;
@@ -12,6 +12,26 @@ function update(){
  if(a&&a.textContent!=='Truck facilities'){a.textContent='Truck facilities';a.setAttribute('aria-label','Show operator-listed truck facilities');}
  if(b&&b.textContent!=='Recorded height'){b.textContent='Recorded height';b.setAttribute('aria-label','Filter by recorded height');}
 }
-function start(){update();const list=document.querySelector('#page-options .phone-page-body');if(!list)return;const obs=new MutationObserver(update);obs.observe(list,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['hidden']});window.addEventListener('pagehide',()=>obs.disconnect(),{once:true});}
+function compactCredits(){
+ const host=document.getElementById('exploreMap');if(!host)return;
+ let waiting,creditObserver;
+ const collapseOnce=credit=>{
+  if(!credit.classList.contains('maplibregl-compact'))return false;
+  credit.classList.remove('maplibregl-compact-show');credit.removeAttribute('open');
+  credit.dataset.nativeInitiallyCollapsed='true';return true;
+ };
+ const find=()=>{
+  const credit=host.querySelector('.maplibregl-ctrl-attrib');if(!credit)return false;
+  if(!collapseOnce(credit)){
+   creditObserver=new MutationObserver(()=>{if(collapseOnce(credit))creditObserver.disconnect();});
+   creditObserver.observe(credit,{attributes:true,attributeFilter:['class']});
+  }
+  return true;
+ };
+ if(!find()){waiting=new MutationObserver(()=>{if(find())waiting.disconnect();});waiting.observe(host,{childList:true,subtree:true});}
+ // Nothing listens to the information toggle after initial setup; the user can read/close credits normally.
+ window.addEventListener('pagehide',()=>{waiting?.disconnect();creditObserver?.disconnect();},{once:true});
+}
+function start(){compactCredits();update();const list=document.querySelector('#page-options .phone-page-body');if(!list)return;const obs=new MutationObserver(update);obs.observe(list,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['hidden']});window.addEventListener('pagehide',()=>obs.disconnect(),{once:true});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
