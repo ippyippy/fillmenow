@@ -1,8 +1,9 @@
 // Build the existing direct-GPS app, then apply native-only visual changes.
 import fs from 'node:fs';
+import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import assert from 'node:assert/strict';
-execFileSync('node',['tools/direct-native-prepare.mjs'],{stdio:'inherit'});
+execFileSync(process.execPath,[path.resolve('tools/direct-native-prepare.mjs')],{stdio:'inherit'});
 const main='android/app/src/main/java/au/com/fillmenow/app/MainActivity.java';
 let java=fs.readFileSync(main,'utf8');
 const begin=java.indexOf(' @Override public void onCreate(Bundle b)'),end=java.indexOf('\n public void ensureLocation(',begin);
@@ -26,7 +27,6 @@ const onCreate=` @Override public void onCreate(Bundle b){
  }`;
 fs.writeFileSync(main,java.slice(0,begin)+onCreate+java.slice(end));
 const cfg=JSON.parse(fs.readFileSync('native/capacitor.config.json'));
-// One inset owner. The root container handles system bars, cutouts and keyboard; no CSS double padding.
 cfg.plugins={...(cfg.plugins||{}),SystemBars:{insetsHandling:'disable',style:'LIGHT',hidden:false}};
 fs.writeFileSync('native/capacitor.config.json',JSON.stringify(cfg,null,2));
 let manifest=fs.readFileSync('android/app/src/main/AndroidManifest.xml','utf8');manifest=manifest.replace('android:launchMode="singleTask"','android:launchMode="singleTask" android:windowSoftInputMode="adjustResize"');fs.writeFileSync('android/app/src/main/AndroidManifest.xml',manifest);
@@ -35,16 +35,16 @@ for(const n of ['visual-polish.css','visual-polish.js','visual-polish-details.cs
 for(const name of fs.readdirSync('native/www')){
  if(!/\.(css|html)$/.test(name))continue;
  const p='native/www/'+name;let text=fs.readFileSync(p,'utf8');
- text=text.replace(/env\(safe-area-inset-(?:top|right|bottom|left)(?:\s*,\s*[^)]*)?\)/g,'0px');
+ // Only short, known CSS env() values; bounded matching cannot backtrack through a whole asset.
+ text=text.replace(/env\(safe-area-inset-(?:top|right|bottom|left)[^)]{0,64}\)/g,'0px');
  if(name==='index.html'){
   text=text.replace('<html lang="en">','<html lang="en" data-native-polish="1.2.1">');
-  // Last stylesheets win over historical browser-only responsive patches.
   text=text.replace('</body>','<link rel="stylesheet" href="/visual-polish.css"><link rel="stylesheet" href="/visual-polish-details.css"><script src="/visual-polish.js"></script><script src="/visual-polish-details.js"></script></body>');
  }
  fs.writeFileSync(p,text);
 }
 const entry='native/www/native-entry.js';let bundle=fs.readFileSync(entry,'utf8');bundle=bundle.replaceAll('Android 1.2.0 GPS test','Android 1.2.1 visual test');fs.writeFileSync(entry,bundle);
-// The visible consolidated control now owns Stop as well as Locate. Keep the complete GPS test.
 const test='android/app/src/androidTest/java/au/com/fillmenow/app/NativeMapTest.java';let check=fs.readFileSync(test,'utf8');check=check.replaceAll('tap("#followToggle")','tap("#recenterBtn")');fs.writeFileSync(test,check);
-execFileSync('npx',['cap','sync','android'],{cwd:'native',stdio:'inherit'});
+const capacitorCli=path.resolve('native/node_modules/@capacitor/cli/bin/capacitor');assert(fs.existsSync(capacitorCli),'Pinned Capacitor CLI missing');
+execFileSync(process.execPath,[capacitorCli,'sync','android'],{cwd:path.resolve('native'),stdio:'inherit'});
 console.log('Native visual 1.2.1 prepared; GPS provider, permission rules, price data, web production and saved storage are unchanged.');
