@@ -24,7 +24,16 @@ public class NativePolishTest {
  private String json(String exp)throws Exception{ArrayBlockingQueue<String> q=new ArrayBlockingQueue<>(1);scenario.onActivity(a->a.getBridge().getWebView().evaluateJavascript("JSON.stringify("+exp+")",q::offer));String s=q.poll(10,TimeUnit.SECONDS);assertNotNull(s);Object o=new JSONTokener(s).nextValue();return o==JSONObject.NULL?"null":o.toString();}
  private void run(String s)throws Exception{json("(()=>{"+s+";return true})()");}
  private void waitFor(String s,int seconds)throws Exception{long until=SystemClock.elapsedRealtime()+seconds*1000L;do{if("true".equals(json(s)))return;SystemClock.sleep(300);}while(SystemClock.elapsedRealtime()<until);fail("Condition not reached: "+s);}
- private void tap(String selector)throws Exception{String query=JSONObject.quote(selector);waitFor("!!document.querySelector("+query+")",15);String label=new JSONTokener(json("(()=>{const e=document.querySelector("+query+");e.scrollIntoView({block:'nearest'});return(e.getAttribute('aria-label')||e.innerText||e.value||'').trim()})()")).nextValue().toString();assertFalse(label.isEmpty());device.waitForIdle(1000);UiObject2 e=device.wait(Until.findObject(By.desc(label).enabled(true)),1500);if(e==null)e=device.wait(Until.findObject(By.text(label).enabled(true)),2000);assertNotNull("Missing visible native target: "+selector+" "+label,e);assertFalse(e.getVisibleBounds().isEmpty());e.click();}
+ private void tap(String selector)throws Exception{
+  String query=JSONObject.quote(selector);waitFor("!!document.querySelector("+query+")",15);
+  String raw=new JSONTokener(json("(()=>{const e=document.querySelector("+query+");e.scrollIntoView({block:'nearest'});return(e.getAttribute('aria-label')||e.innerText||e.value||'').trim()})()")).nextValue().toString();
+  String label=raw.replaceAll("\\s+"," ").trim();assertFalse(label.isEmpty());device.waitForIdle(1000);
+  UiObject2 e=device.wait(Until.findObject(By.desc(label).enabled(true)),1000);if(e==null)e=device.wait(Until.findObject(By.text(label).enabled(true)),1500);
+  // Android flattens HTML whitespace and may expose a menu label as a child text node.
+  // Tap that unique visible native node, never a guessed coordinate or a hidden DOM control.
+  if(e==null){for(String part:raw.split("\\R")){part=part.trim();if(part.length()<2)continue;java.util.List<UiObject2> matches=device.findObjects(By.text(part).enabled(true));if(matches.size()==1){e=matches.get(0);break;}}}
+  assertNotNull("Missing visible native target: "+selector+" "+label,e);assertFalse(e.getVisibleBounds().isEmpty());e.click();
+ }
  private void screen(String n){device.takeScreenshot(new File(dir(),n+".png"));}
  private void bounds(String name,boolean keyboard)throws Exception{
   SystemClock.sleep(800);ArrayBlockingQueue<String> q=new ArrayBlockingQueue<>(1);
