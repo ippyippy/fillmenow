@@ -33,14 +33,14 @@ jobs:
       - name: Check compact map and shared screens in browser fixtures
         env:
           NODE_PATH: /tmp/fmn-layout/node_modules
-        run: node --require ./tools/native-layout-runtime-fixture.cjs tools/native-visual-browser.cjs
+        run: node tools/native-visual-browser.cjs
       - name: Set up pinned Android tools
         run: |
           set -euo pipefail
           echo "JAVA_HOME=$JAVA_HOME_21_X64" >> "$GITHUB_ENV"
           echo "$JAVA_HOME_21_X64/bin" >> "$GITHUB_PATH"
-          curl -fsSL https://services.gradle.org/distributions/gradle-8.14.3-bin.zip -o /tmp/gradle.zip
-          EXPECTED="$(curl -fsSL https://services.gradle.org/distributions/gradle-8.14.3-bin.zip.sha256)"
+          curl --proto '=https' --proto-redir '=https' --tlsv1.2 -fsSL https://services.gradle.org/distributions/gradle-8.14.3-bin.zip -o /tmp/gradle.zip
+          EXPECTED="$(curl --proto '=https' --proto-redir '=https' --tlsv1.2 -fsSL https://services.gradle.org/distributions/gradle-8.14.3-bin.zip.sha256)"
           echo "$EXPECTED  /tmp/gradle.zip" | sha256sum -c -
           unzip -q /tmp/gradle.zip -d /tmp
           echo /tmp/gradle-8.14.3/bin >> "$GITHUB_PATH"
