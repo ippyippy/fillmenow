@@ -24,15 +24,17 @@ public class NativePolishTest {
  private String json(String exp)throws Exception{ArrayBlockingQueue<String> q=new ArrayBlockingQueue<>(1);scenario.onActivity(a->a.getBridge().getWebView().evaluateJavascript("JSON.stringify("+exp+")",q::offer));String s=q.poll(10,TimeUnit.SECONDS);assertNotNull(s);Object o=new JSONTokener(s).nextValue();return o==JSONObject.NULL?"null":o.toString();}
  private void run(String s)throws Exception{json("(()=>{"+s+";return true})()");}
  private void waitFor(String s,int seconds)throws Exception{long until=SystemClock.elapsedRealtime()+seconds*1000L;do{if("true".equals(json(s)))return;SystemClock.sleep(300);}while(SystemClock.elapsedRealtime()<until);fail("Condition not reached: "+s);}
+ private void settledMap()throws Exception{
+  waitFor("document.readyState==='complete'&&!!document.getElementById('nativeStatus')&&!!window.FMNJourneyApp?.getMap()&&Number(document.getElementById('statCount').textContent)>0",45);
+  assertEquals("Native profile must survive system recreation","true",json("(()=>{const p=JSON.parse(localStorage.getItem('fdPrefs'));return p.tank===250&&p.truck.height===4.2&&!!FMNJourneyApp.getLocation()})()"));
+  SystemClock.sleep(300);
+ }
  private void tap(String selector)throws Exception{
   String query=JSONObject.quote(selector);waitFor("!!document.querySelector("+query+")",15);
   String raw=new JSONTokener(json("(()=>{const e=document.querySelector("+query+");e.scrollIntoView({block:'nearest'});return(e.getAttribute('aria-label')||e.innerText||e.value||'').trim()})()")).nextValue().toString();
   String label=raw.replaceAll("\\s+"," ").trim();assertFalse(label.isEmpty());device.waitForIdle(1000);
   UiObject2 e=device.wait(Until.findObject(By.desc(label).enabled(true)),1000);if(e==null)e=device.wait(Until.findObject(By.text(label).enabled(true)),1500);
-  // Android exposes an input as, for example, "250, Typical fill in litres".
-  // Require one actual visible EditText with this label; no synthetic DOM focus/click.
   if(e==null){java.util.List<UiObject2> fields=device.findObjects(By.clazz("android.widget.EditText").textContains(label).enabled(true));if(fields.size()==1)e=fields.get(0);}
-  // Android flattens HTML whitespace and may expose a menu label as a child text node.
   if(e==null){for(String part:raw.split("\\R")){part=part.trim();if(part.length()<2)continue;java.util.List<UiObject2> matches=device.findObjects(By.text(part).enabled(true));if(matches.size()==1){e=matches.get(0);break;}}}
   assertNotNull("Missing visible native target: "+selector+" "+label,e);assertFalse(e.getVisibleBounds().isEmpty());e.click();
  }
@@ -57,11 +59,14 @@ public class NativePolishTest {
    tap(".nav[data-page='more']");bounds("More",false);screen("04-more");tap("[data-open-panel='vehicle']");waitFor("document.querySelector('#settingsDrawer').classList.contains('open')",10);bounds("Vehicle",false);screen("05-vehicle");assertEquals("\"250\"",json("document.getElementById('tankInput').value"));assertEquals("\"4.2\"",json("document.getElementById('truckHeight').value"));
    tap("#tankInput");SystemClock.sleep(1200);bounds("Vehicle keyboard",true);screen("06-vehicle-keyboard");device.pressBack();SystemClock.sleep(500);tap("#drawerBack");
    for(String page:new String[]{"saved","alerts"}){tap(".nav[data-page='"+page+"']");bounds(page,false);screen("07-"+page);}
-   tap(".nav[data-page='explore']");device.setOrientationLeft();waitFor("innerWidth>innerHeight",15);bounds("Landscape",false);screen("08-explore-landscape");assertEquals("56",json("document.querySelector('.topbar.app-topbar').getBoundingClientRect().height"));
+   tap(".nav[data-page='explore']");device.setOrientationLeft();waitFor("innerWidth>innerHeight",15);settledMap();bounds("Landscape",false);screen("08-explore-landscape");assertEquals("56",json("document.querySelector('.topbar.app-topbar').getBoundingClientRect().height"));
    device.setOrientationNatural();waitFor("innerHeight>innerWidth",15);
-   for(String mode:new String[]{"threebutton","gestural"}){String response=device.executeShellCommand("cmd overlay enable-exclusive --category com.android.internal.systemui.navbar."+mode);assertFalse(response.contains("Error"));SystemClock.sleep(1500);bounds("Navigation "+mode,false);screen("09-navigation-"+mode);}
+   for(String mode:new String[]{"threebutton","gestural"}){
+    String response=device.executeShellCommand("cmd overlay enable-exclusive --category com.android.internal.systemui.navbar."+mode);assertFalse(response.contains("Error"));SystemClock.sleep(1500);
+    settledMap();bounds("Navigation "+mode,false);screen("09-navigation-"+mode);assertEquals("Map must be restored after system navigation change","true",json("Number(document.getElementById('statCount').textContent)>0"));
+   }
    run("window.FMNPermissionUI.open()");waitFor("!!document.querySelector('#nativeLocationDialog[open]')",10);bounds("Native permission help",false);screen("10-native-help");tap("#nativeLocationDialog footer button");
-   checks.append("PASS: Native content bounds outside system bars/cutout/IME; compact portrait and landscape; native help and app screens reachable. Actual device reception not tested.\n");
+   checks.append("PASS: Native content outside system bars/cutout/IME; compact portrait and landscape; restored map/profile in both Android navigation modes; native help and app screens reachable. Actual device reception not tested.\n");
   }catch(Throwable t){screen("failure");device.dumpWindowHierarchy(new File(dir(),"failure.xml"));throw t;}finally{try(FileOutputStream f=new FileOutputStream(new File(dir(),"layout-checks.txt"))){f.write(checks.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));}device.setOrientationNatural();device.unfreezeRotation();if(scenario!=null)scenario.close();}
  }
 }
