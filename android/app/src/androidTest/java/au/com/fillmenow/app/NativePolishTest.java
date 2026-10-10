@@ -29,8 +29,10 @@ public class NativePolishTest {
   String raw=new JSONTokener(json("(()=>{const e=document.querySelector("+query+");e.scrollIntoView({block:'nearest'});return(e.getAttribute('aria-label')||e.innerText||e.value||'').trim()})()")).nextValue().toString();
   String label=raw.replaceAll("\\s+"," ").trim();assertFalse(label.isEmpty());device.waitForIdle(1000);
   UiObject2 e=device.wait(Until.findObject(By.desc(label).enabled(true)),1000);if(e==null)e=device.wait(Until.findObject(By.text(label).enabled(true)),1500);
+  // Android exposes an input as, for example, "250, Typical fill in litres".
+  // Require one actual visible EditText with this label; no synthetic DOM focus/click.
+  if(e==null){java.util.List<UiObject2> fields=device.findObjects(By.clazz("android.widget.EditText").textContains(label).enabled(true));if(fields.size()==1)e=fields.get(0);}
   // Android flattens HTML whitespace and may expose a menu label as a child text node.
-  // Tap that unique visible native node, never a guessed coordinate or a hidden DOM control.
   if(e==null){for(String part:raw.split("\\R")){part=part.trim();if(part.length()<2)continue;java.util.List<UiObject2> matches=device.findObjects(By.text(part).enabled(true));if(matches.size()==1){e=matches.get(0);break;}}}
   assertNotNull("Missing visible native target: "+selector+" "+label,e);assertFalse(e.getVisibleBounds().isEmpty());e.click();
  }
