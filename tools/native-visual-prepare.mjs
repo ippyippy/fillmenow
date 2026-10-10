@@ -35,11 +35,15 @@ for(const n of ['visual-polish.css','visual-polish.js','visual-polish-details.cs
 for(const name of fs.readdirSync('native/www')){
  if(!/\.(css|html)$/.test(name))continue;
  const p='native/www/'+name;let text=fs.readFileSync(p,'utf8');
- // Only short, known CSS env() values; bounded matching cannot backtrack through a whole asset.
  text=text.replace(/env\(safe-area-inset-(?:top|right|bottom|left)[^)]{0,64}\)/g,'0px');
  if(name==='index.html'){
   text=text.replace('<html lang="en">','<html lang="en" data-native-polish="1.2.1">');
-  text=text.replace('</body>','<link rel="stylesheet" href="/visual-polish.css"><link rel="stylesheet" href="/visual-polish-details.css"><script src="/visual-polish.js"></script><script src="/visual-polish-details.js"></script></body>');
+  const liveStyle='<link rel="stylesheet" href="/live-location.css">';
+  assert(text.includes(liveStyle),'Existing live-location style tag changed');
+  // Preserve cascade order, but make all native styles render-blocking in the head.
+  text=text.replace(liveStyle,'');
+  text=text.replace('</head>',liveStyle+'<link rel="stylesheet" href="/visual-polish.css"><link rel="stylesheet" href="/visual-polish-details.css"></head>');
+  text=text.replace('</body>','<script src="/visual-polish.js"></script><script src="/visual-polish-details.js"></script></body>');
  }
  fs.writeFileSync(p,text);
 }
