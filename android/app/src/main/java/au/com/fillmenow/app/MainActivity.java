@@ -13,7 +13,23 @@ import com.google.android.gms.location.*;
 public final class MainActivity extends BridgeActivity {
  private PluginCall pendingSettings;
  private final ActivityResultLauncher<IntentSenderRequest> resolution=registerForActivityResult(new ActivityResultContracts.StartIntentSenderForResult(),r->{PluginCall p=pendingSettings;pendingSettings=null;if(p!=null){if(r.getResultCode()==Activity.RESULT_OK)p.resolve();else p.reject("Phone Location was not enabled","LOCATION_SETTINGS_DECLINED");}});
- @Override public void onCreate(Bundle b){registerPlugin(FMNSettingsPlugin.class);super.onCreate(b);if(getBridge()!=null){android.view.View view=getBridge().getWebView();ViewCompat.setOnApplyWindowInsetsListener(view,(v,insets)->{androidx.core.graphics.Insets i=insets.getInsets(WindowInsetsCompat.Type.systemBars()|WindowInsetsCompat.Type.displayCutout());v.setPadding(i.left,i.top,i.right,i.bottom);return insets;});ViewCompat.requestApplyInsets(view);}}
+ @Override public void onCreate(Bundle b){
+  registerPlugin(FMNSettingsPlugin.class);super.onCreate(b);
+  androidx.core.view.WindowCompat.setDecorFitsSystemWindows(getWindow(),false);
+  androidx.core.view.WindowInsetsControllerCompat bars=androidx.core.view.WindowCompat.getInsetsController(getWindow(),getWindow().getDecorView());
+  bars.setAppearanceLightStatusBars(true);bars.setAppearanceLightNavigationBars(true);
+  android.view.View root=findViewById(android.R.id.content);
+  root.setBackgroundColor(android.graphics.Color.WHITE);
+  if(getBridge()!=null)getBridge().getWebView().setPadding(0,0,0,0);
+  // Inset the CONTAINER, not the WebView drawing surface. This changes the HTML viewport too.
+  ViewCompat.setOnApplyWindowInsetsListener(root,(v,insets)->{
+   androidx.core.graphics.Insets safe=insets.getInsets(WindowInsetsCompat.Type.systemBars()|WindowInsetsCompat.Type.displayCutout());
+   androidx.core.graphics.Insets keyboard=insets.getInsets(WindowInsetsCompat.Type.ime());
+   v.setPadding(safe.left,safe.top,safe.right,Math.max(safe.bottom,keyboard.bottom));
+   return WindowInsetsCompat.CONSUMED;
+  });
+  ViewCompat.requestApplyInsets(root);
+ }
  public void ensureLocation(PluginCall call){
   if(pendingSettings!=null){call.reject("Location setup already in progress","SETTINGS_BUSY");return;}
   pendingSettings=call;
