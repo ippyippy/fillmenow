@@ -4,7 +4,7 @@ function update(){
  const note=document.getElementById('truckAccessNotice');if(!note)return;
  let box=document.getElementById('nativeTruckDetails');
  if(!box){box=document.createElement('details');box.id='nativeTruckDetails';const title=document.createElement('summary');box.append(title);note.before(box);box.append(note);}
- box.hidden=note.hidden;
+ if(box.hidden!==note.hidden)box.hidden=note.hidden;
  const height=note.textContent.match(/Your truck:\s*([\d.]+) m high/),unknown=note.textContent.includes('No verified numerical clearance');
  const title=box.querySelector('summary'),text=(height?height[1]+' m truck':'Truck profile')+' · '+(unknown?'access not confirmed':'review access limits');
  if(title.textContent!==text)title.textContent=text;
