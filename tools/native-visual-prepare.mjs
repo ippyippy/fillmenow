@@ -31,15 +31,15 @@ cfg.plugins={...(cfg.plugins||{}),SystemBars:{insetsHandling:'disable',style:'LI
 fs.writeFileSync('native/capacitor.config.json',JSON.stringify(cfg,null,2));
 let manifest=fs.readFileSync('android/app/src/main/AndroidManifest.xml','utf8');manifest=manifest.replace('android:launchMode="singleTask"','android:launchMode="singleTask" android:windowSoftInputMode="adjustResize"');fs.writeFileSync('android/app/src/main/AndroidManifest.xml',manifest);
 const build='android/app/build.gradle';let gradle=fs.readFileSync(build,'utf8');assert(gradle.includes("versionCode 3; versionName '1.2.0-direct-gps-test'"));gradle=gradle.replace("versionCode 3; versionName '1.2.0-direct-gps-test'","versionCode 4; versionName '1.2.1-visual-test'");fs.writeFileSync(build,gradle);
-for(const n of ['visual-polish.css','visual-polish.js'])fs.copyFileSync('native/'+n,'native/www/'+n);
+for(const n of ['visual-polish.css','visual-polish.js','visual-polish-details.css','visual-polish-details.js'])fs.copyFileSync('native/'+n,'native/www/'+n);
 for(const name of fs.readdirSync('native/www')){
  if(!/\.(css|html)$/.test(name))continue;
  const p='native/www/'+name;let text=fs.readFileSync(p,'utf8');
  text=text.replace(/env\(safe-area-inset-(?:top|right|bottom|left)(?:\s*,\s*[^)]*)?\)/g,'0px');
  if(name==='index.html'){
   text=text.replace('<html lang="en">','<html lang="en" data-native-polish="1.2.1">');
-  // Last stylesheet wins over historical browser-only responsive patches.
-  text=text.replace('</body>','<link rel="stylesheet" href="/visual-polish.css"><script src="/visual-polish.js"></script></body>');
+  // Last stylesheets win over historical browser-only responsive patches.
+  text=text.replace('</body>','<link rel="stylesheet" href="/visual-polish.css"><link rel="stylesheet" href="/visual-polish-details.css"><script src="/visual-polish.js"></script><script src="/visual-polish-details.js"></script></body>');
  }
  fs.writeFileSync(p,text);
 }
