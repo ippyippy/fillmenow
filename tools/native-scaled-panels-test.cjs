@@ -36,6 +36,7 @@ try{
  const scaleGeometry=await page.evaluate(()=>{const r=s=>document.querySelector(s).getBoundingClientRect().toJSON();return{zoom:Number(getComputedStyle(document.body).zoom),browserZoom:visualViewport.scale,header:r('.topbar'),nav:r('.bottom-nav'),map:r('#exploreMap')};});
  assert.equal(scaleGeometry.zoom,1);assert.equal(scaleGeometry.browserZoom,1);assert(Math.abs(scaleGeometry.header.height-(h<480?50:56)*.8)<.1);assert(Math.abs(scaleGeometry.nav.height-(h<480?56:60)*.8)<.1);assert(Math.abs(scaleGeometry.map.bottom-scaleGeometry.nav.top)<1,'Map fills the viewport down to navigation');
  for(const id of ['fmnVehiclePanel','fmnJourneyPanel','fmnPopularAreas','fmnFeatureRefine'])assert.equal(await page.locator('#'+id).getAttribute('open'),null,'Panels start compact');
+ assert.equal(await page.locator('#fmnVehiclePanel>summary').getAttribute('aria-label'),'Vehicle & fuel');assert.equal(await page.locator('#fmnJourneyPanel>summary').getAttribute('aria-label'),'Location & journey');
  await page.screenshot({path:path.join(dir,engine+'-'+w+'-collapsed.png')});
  await page.locator('#fmnVehiclePanel>summary').click();await page.locator('#fmnSearchRadius').selectOption('50');await page.locator('#fmnVehiclePanel>summary').click();
  assert.equal(await page.locator('#fmnSearchRadius').isVisible(),false);assert.match(await page.locator('#fmnVehiclePanelBrief').innerText(),/50 km/);

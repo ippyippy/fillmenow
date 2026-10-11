@@ -15,7 +15,7 @@ function brief(){
 function wrap(id,panelId){
  const section=$(id),panel=document.createElement('details'),summary=document.createElement('summary'),label=document.createElement('span'),info=document.createElement('span');
  panel.id=panelId;panel.className='fmn-feature-details fmn-main-feature';label.className='fmn-panel-label';info.id=panelId+'Brief';info.className='fmn-panel-brief';
- label.append(section.querySelector('h3'),info);summary.append(label);section.before(panel);panel.append(summary,section);return panel;
+ const heading=section.querySelector('h3');summary.setAttribute('aria-label',heading.textContent.trim());summary.setAttribute('aria-describedby',info.id);label.append(heading,info);summary.append(label);section.before(panel);panel.append(summary,section);return panel;
 }
 function mount(){
  if(!window.FMNFeatures?.ready)return false;
@@ -23,6 +23,7 @@ function mount(){
  const popular=$('fmnPopularAreas');panels.fmnJourneyPanel.after(popular);
  for(const id of ['fmnPopularAreas','fmnFeatureRefine','fmnSearchDetails'])if($(id))panels[id]=$(id);
  for(const [id,panel] of Object.entries(panels)){
+  const summary=panel.querySelector(':scope > summary');if(summary&&!summary.hasAttribute('aria-label'))summary.setAttribute('aria-label',summary.textContent.trim());
   panel.open=saved[id]===true;
   panel.addEventListener('toggle',()=>{saved[id]=panel.open;try{localStorage.setItem(key,JSON.stringify(saved));}catch{}brief();});
  }
