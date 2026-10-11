@@ -11,11 +11,12 @@ if(!s.includes('MARKER_TRUCK_ACCEPTANCE')){assert.equal(s.split(anchor).length,2
    assertEquals("Pan must not replace native station/logo nodes","true",json("window.__nativePinNodes.every(p=>p.e.isConnected&&p.e.querySelector('.brand-mark')===p.brand)"));
    checks.append("Truck catalogue gate and persistent native marker/logo nodes during an animated pan passed.\\n");
 `+anchor);fs.writeFileSync(test,s);}
-const C=require('../native/www/nearby-core.js');const now=Date.now(),stamp=new Date(now-1000).toISOString();const ctx={state:'QLD',fuel:'Diesel',radius:10,tank:250,vehicle:'truck',truck:{height:4.2,width:2,length:12,weight:12,configuration:'rigid'}};
+const sandbox={module:{exports:{}},URL};require('node:vm').runInNewContext(fs.readFileSync('native/www/nearby-core.js','utf8'),sandbox);const C=sandbox.module.exports;
+const now=Date.now(),stamp=new Date(now-1000).toISOString();const ctx={state:'QLD',fuel:'Diesel',radius:10,tank:250,vehicle:'truck',truck:{height:4.2,width:2,length:12,weight:12,configuration:'rigid'}};
 const rows=['yes','no','expired','wrong-state','bad-url','diesel-only'].map((id,i)=>({station_id:id,price:180+i,effective:183+i,distance:1,state:'QLD',fuel_type:'Diesel',brand:'BP'}));
 const facility=id=>({station_id:id,state:'QLD',kind:'operator_listed_truck_stop',source_url:'https://example.com/fixture',checked_at:stamp,note:'Test-only facility'});
 const cat={offers:[],access:[],facilities:[facility('yes'),{...facility('expired'),checked_at:new Date(now-91*86400000).toISOString()},{...facility('wrong-state'),state:'NSW'},{...facility('bad-url'),source_url:'javascript:alert(1)'}]};
-for(const access of ['all','truckstops','unknown'])assert.deepEqual(C.select(rows,ctx,{access},cat,[],now).map(x=>x.station_id),['yes']);
+for(const access of ['all','truckstops','unknown'])assert.equal(JSON.stringify(C.select(rows,ctx,{access},cat,[],now).map(x=>x.station_id)),JSON.stringify(['yes']));
 for(const access of ['height','matches'])assert.equal(C.select(rows,ctx,{access},cat,[],now).length,0);
 assert.equal(C.select(rows,ctx,{},null,[],now).length,0);
 assert.equal(C.select(rows,{...ctx,vehicle:'heavy'},{},cat,[],now).length,1);
