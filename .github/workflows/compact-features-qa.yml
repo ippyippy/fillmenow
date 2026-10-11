@@ -32,6 +32,9 @@ jobs:
       - name: Verify button navigation, layout spacing, unified Search, markers and settings
         env:
           NODE_PATH: /tmp/fmn-layout/node_modules
+          # This packaging recipe targets Chromium-based Android WebView.
+          # WebKit exposes pre-zoom DOM coordinates and is not an Android runtime.
+          CHROMIUM_ONLY: '1'
         run: |
           node tools/native-map-clarity-test.cjs
           node tools/native-unified-search-test.cjs

@@ -50,6 +50,7 @@ for(const name of ['native-unified-search-test.cjs','native-ux-controls-test.cjs
  }
  if(name==='native-map-clarity-test.cjs'){
   test=replace(test,'assert.equal(g.header.h,height<480?50:56);assert.equal(g.nav.h,height<480?56:60);','assert.ok(Math.abs(g.header.h-(height<480?50:56)*.8)<.1,JSON.stringify(g));assert.ok(Math.abs(g.nav.h-(height<480?56:60)*.8)<.1,JSON.stringify(g));');
+  test=replace(test,'await run(...x);assert.equal(results.writes,0);',"if(!process.env.CHROMIUM_ONLY||x[0]==='chromium')await run(...x);assert.equal(results.writes,0);");
  }
  if(name==='native-ux-controls-test.cjs'){
   test=replace(test,'x.h>=48','x.h>=38.3');test=replace(test,'have 48px touch targets','retain proportionally scaled touch targets');test=replace(test,'spacing.inside>=48&&spacing.tail>=20&&spacing.nav.every(x=>x>=48)','spacing.inside>=38.3&&spacing.tail>=15.9&&spacing.nav.every(x=>x>=38.3)');

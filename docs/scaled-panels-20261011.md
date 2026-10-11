@@ -9,3 +9,5 @@ Cheapest keeps every usable pump price from the minimum through minimum + 10 cen
 Build: `node tools/native-scaled-panels-prepare.mjs` produces version code 10 / `1.2.7-scale-panels-test` from the existing native recipe. The shared nearby selector owns the price window. Backend, native GPS provider, iOS and the facility directory remain unchanged.
 
 Validation covers exact 80% geometry at browser zoom 1, full viewport fit, real marker taps, pinch gestures and Dash drags, panel persistence, price-window edges and map/list agreement, existing Search and settings flows, and Android GPS/system-bar/keyboard checks. Physical Samsung verification follows delivery.
+
+The release gate uses Chromium at four screen sizes and the actual Android emulator. The WebKit diagnostic returned pre-zoom DOM coordinates for scaled elements; this Android packaging recipe is not an iOS/WebKit release. Existing iOS source and release workflows are unchanged.
