@@ -25,6 +25,9 @@ try{
  page=await context.newPage();page.on('pageerror',e=>rec.errors.push(e.message));page.setDefaultTimeout(15000);
  await page.goto('https://localhost/',{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>!!window.FMNUnifiedSearch&&!!document.querySelector('#fmnUnifiedVehicle')&&Number(document.querySelector('#statCount').textContent)>0);
  await page.locator('#topArea').click();await page.locator('#areaModal.open').waitFor();
+ assert.equal(await page.locator('#journeyMode option[value="destination"]').innerText(),'Add destination');
+ await page.locator('#areaModal .popup-scroll').evaluate(el=>{el.scrollTop=0});
+ await page.screenshot({path:path.join(dir,engine+'-'+w+'-search-initial.png')});
  const headings=await page.locator('#areaModal .fmn-unified-section h3').allTextContents();
  assert.deepEqual(headings,['Your vehicle & fuel','Your location & journey']);assert.equal(await page.locator('#modalFuel').count(),1);
  assert.equal(await page.locator('#fmnSearchVehicle').inputValue(),'truck');assert.equal(await page.locator('#fmnSearchRadius').inputValue(),'20');
