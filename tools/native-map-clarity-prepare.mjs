@@ -10,6 +10,10 @@ function section(file,start,end,next){const p=root+file,s=fs.readFileSync(p,'utf
 // All truck search views pass through the existing pure selector. Unknown/non-truck stations never leak back through Reset.
 patch('nearby-core.js',"}).filter(r=>(f.deals==='all'", "}).filter(r=>(!truckMode(ctx)||(!!r._facility&&r._access.status!=='mismatch'&&r._height!=='mismatch'))&&(f.deals==='all'");
 patch('nearby-ui.js',"function useFilters(){filters=C.normaliseFilters(filters,context().radius);return filters}","function useFilters(){filters=C.normaliseFilters(filters,context().radius);if(C.truckMode(context())&&['all','unknown'].includes(filters.access))filters.access='truckstops';return filters}");
+// Do not briefly show ordinary stations while modules/catalogue initialise.
+patch('nearby-ui.js','if(!app){lastList=rows;return rows;}','if(!app){lastList=C.truckMode(prefs)?[]:rows;return lastList;}');
+patch('index.html','ranked=window.FMNNearbyUI?FMNNearbyUI.select(allRanked,prefs):allRanked;','ranked=window.FMNNearbyUI?FMNNearbyUI.select(allRanked,prefs):(["truck","heavy"].includes(prefs.vehicle)?[]:allRanked);');
+patch('index.html','var list=window.FMNNearbyUI?FMNNearbyUI.select(source,prefs):source;','var list=window.FMNNearbyUI?FMNNearbyUI.select(source,prefs):(["truck","heavy"].includes(prefs.vehicle)?[]:source);');
 patch('nearby-ui.js','<option value="all">Show all, including unverified access</option><option value="truckstops">Operator-listed truck stops · clearance unknown</option>','<option value="truckstops">Truck facilities only</option>');
 patch('nearby-ui.js','<option value="unknown">Clearance not recorded</option>','');
 patch('nearby-ui.js',"el('button','Show all · clearance unknown','btn btn-go')","el('button',C.truckMode(context())?'Reset truck filters':'Reset filters','btn btn-go')");
@@ -49,6 +53,7 @@ patch('index.html','  pin.marker.setOffset([0,-8]);','  // The offset is constan
 patch('index.html','(allRanked.length!==ranked.length?" · filtered":"")+" · View all"','" · View"');
 // Last stylesheet wins consistently, including descendant badge contrast overridden by older broad selectors.
 for(const name of ['map-clarity.css','map-clarity.js'])fs.copyFileSync('native/'+name,root+name);
+patch('map-clarity.js',"$('exploreMap').addEventListener('pointerdown',e=>{if(e.target.closest('.maplibregl-canvas'))hide();},{passive:true});","$('exploreMap').addEventListener('pointerdown',hide,{passive:true});document.addEventListener('click',e=>{if(e.target.closest('#topArea,#mapSettingsBtn'))hide();});");
 patch('index.html','</head>','<link rel="stylesheet" href="/map-clarity.css"></head>');
 patch('index.html','</body>','<script src="/map-clarity.js"></script></body>');
 // Keep one native storage origin and the same native location code. Only the display version changes.
