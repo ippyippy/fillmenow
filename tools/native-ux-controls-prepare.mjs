@@ -33,6 +33,19 @@ src=src.slice(0,summaryStart)+
  "function summary(n,total){const f=useFilters();return n+' of '+total+' stations · '+f.minKm+'–'+f.maxKm+' km'+(f.travel==='towards'?' · On my way (direction only)':'');}\n"+
  src.slice(summaryEnd);
 fs.writeFileSync(nearby,src);
+// Legacy map QA must navigate the user-facing buttons after Reset/Filters moved into the compact toolbar.
+// Keep every station-count, height, GPS and marker assertion unchanged.
+const mapTest='tools/native-map-clarity-test.cjs';let check=fs.readFileSync(mapTest,'utf8');
+const moves=[
+ ["await p.locator('#nearbyReset').click();","await p.locator('#fmnQuickActions button').nth(3).click();await p.locator('#fmnResetInsideFilters').click();"],
+ ["await p.locator('#nearbyFilterButton').click();","await p.locator('#fmnQuickActions button').nth(3).click();"]
+];
+for(const [old,next] of moves){
+ assert.equal(check.split(old).length-1,1,'Legacy map QA changed: review visible filter button sequence');
+ check=check.replace(old,next);
+}
+fs.writeFileSync(mapTest,check);
+
 for(const f of ['ux-controls.js','ux-controls.css'])fs.copyFileSync('native/'+f,root+f);
 const file=root+'index.html';let html=fs.readFileSync(file,'utf8');
 assert(html.includes('</head>')&&html.includes('</body>'));
