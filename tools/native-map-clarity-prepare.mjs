@@ -59,5 +59,12 @@ patch('index.html','</body>','<script src="/map-clarity.js"></script></body>');
 // Keep one native storage origin and the same native location code. Only the display version changes.
 const gradle='android/app/build.gradle';let g=fs.readFileSync(gradle,'utf8');assert(g.includes("versionCode 4; versionName '1.2.1-visual-test'"));g=g.replace("versionCode 4; versionName '1.2.1-visual-test'","versionCode 5; versionName '1.2.2-map-clarity-test'");fs.writeFileSync(gradle,g);
 let entry=fs.readFileSync(root+'native-entry.js','utf8');entry=entry.replaceAll('Android 1.2.1 visual test','Android 1.2.2 map clarity test');fs.writeFileSync(root+'native-entry.js',entry);
+// Search and vehicle use one set of controls; no second preference store.
+for(const name of ['search-unified.js','search-unified.css'])fs.copyFileSync('native/'+name,root+name);
+patch('index.html','</head>','<link rel="stylesheet" href="/search-unified.css"></head>');
+patch('index.html','</body>','<script src="/search-unified.js"></script></body>');
+let buildNext=fs.readFileSync(gradle,'utf8');
+buildNext=buildNext.replace("versionCode 5; versionName '1.2.2-map-clarity-test'","versionCode 6; versionName '1.2.3-search-unified-test'");
+fs.writeFileSync(gradle,buildNext);
 execFileSync(process.execPath,[path.resolve('native/node_modules/@capacitor/cli/bin/capacitor'),'sync','android'],{cwd:'native',stdio:'inherit'});
 console.log('Prepared native 1.2.2: stable marker refresh, Dash bubble, truck-facility-only results, no GPS provider changes.');
