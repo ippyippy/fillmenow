@@ -1,0 +1,52 @@
+/* Native unified Search screen: shared settings + current location + destination in one scroll view. */
+body #areaModal .location-heading{padding:12px 16px 10px!important}
+body #areaModal .location-heading h2{font-size:22px!important;line-height:1.25!important;letter-spacing:-.35px!important}
+body #areaModal .popup-scroll{padding:12px 14px 18px!important;display:block!important;overflow-x:hidden!important}
+body #areaModal .popup-footer{background:#fff!important}
+body #areaModal .fmn-unified-section{display:grid;gap:9px;min-width:0;margin:0 0 14px;padding:14px;border:1px solid #d8e3da;border-radius:15px;background:#fff;box-shadow:0 1px 3px #1633230c}
+body #areaModal .fmn-unified-section h3{font:750 18px/1.3 system-ui,-apple-system,sans-serif!important;letter-spacing:-.3px!important;color:#14281c!important;margin:0!important}
+body #areaModal .fmn-section-desc{font:400 13px/1.45 system-ui,-apple-system,sans-serif!important;margin:0 0 2px!important;color:#52645a!important}
+body #areaModal .fmn-unified-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;min-width:0}
+body #areaModal .fmn-unified-grid>*{min-width:0;max-width:100%}
+body #areaModal .fmn-unified-grid>.fmn-full{grid-column:1/-1}
+body #areaModal .fmn-search-field{display:flex;flex-direction:column;gap:5px;min-width:0!important;color:#193c27}
+body #areaModal .fmn-search-label{font:700 12px/1.35 system-ui,-apple-system,sans-serif!important;letter-spacing:.01em!important;color:#496052!important;text-transform:none!important}
+body #areaModal .fmn-search-field input,body #areaModal .fmn-search-field select,
+body #areaModal .fmn-state-field select,body #areaModal #locationSearch,
+body #areaModal #journeyMode,body #areaModal #journeyState,body #areaModal #journeyInput
+{box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important;min-height:48px!important;height:auto!important;margin:0!important;padding:11px 12px!important;border:1px solid #bdcec1!important;border-radius:11px!important;background:#fbfcfa!important;color:#14261b!important;font:600 15px/1.35 system-ui,-apple-system,sans-serif!important;box-shadow:none!important;outline-offset:3px!important}
+body #areaModal input::placeholder{color:#748379!important;opacity:1}
+body #areaModal input:focus-visible,body #areaModal select:focus-visible,body #areaModal button:focus-visible{outline:3px solid #087532!important;outline-offset:2px!important}
+body #areaModal .fmn-vehicle-details{display:block;border:1px solid #e0e8e1;border-radius:12px;overflow:hidden;background:#f6f9f6;margin-top:3px;min-width:0}
+body #areaModal .fmn-vehicle-details summary{cursor:pointer;list-style:none;display:flex;flex-direction:column;gap:3px;padding:11px 13px;min-height:48px;box-sizing:border-box}
+body #areaModal .fmn-vehicle-details summary::-webkit-details-marker{display:none}
+body #areaModal .fmn-vehicle-details summary strong{font:700 14px/1.3 system-ui,sans-serif;color:#153723}
+body #areaModal .fmn-vehicle-details summary strong:after{content:"  ▾";float:right;color:#52645a}
+body #areaModal .fmn-vehicle-details[open] summary strong:after{content:"  ▴"}
+body #areaModal .fmn-vehicle-brief{font:400 12px/1.4 system-ui,sans-serif;color:#52645a;overflow-wrap:anywhere}
+body #areaModal .fmn-vehicle-detail-body{padding:12px;border-top:1px solid #dde6df;display:grid;gap:12px}
+body #areaModal .fmn-truck-search{display:grid;gap:9px;padding:11px;border:1px solid #dae3dd;border-radius:11px;background:#fff}
+body #areaModal .fmn-truck-search[hidden]{display:none!important}
+body #areaModal .fmn-help-note{font:400 12px/1.5 system-ui,sans-serif!important;color:#566158!important;margin:0!important}
+body #areaModal .fmn-save-vehicle{display:block;width:100%;min-height:48px;padding:10px 14px;border:0;border-radius:11px;background:#087532;color:#fff;font:750 15px/1.35 system-ui,sans-serif;cursor:pointer}
+body #areaModal .fmn-search-save-status{font:500 12px/1.4 system-ui,sans-serif!important;margin:0!important;color:#52645a!important}
+body #areaModal .fmn-search-save-status[data-error="true"]{color:#8b4718!important;font-weight:700!important}
+body #areaModal .journey-fields{margin:0!important;padding:0!important;border:none!important;display:grid;gap:7px}
+body #areaModal .journey-fields .field{font:700 13px/1.4 system-ui,sans-serif!important;margin:0!important;gap:6px!important}
+body #areaModal #journeyDestination{display:grid;gap:10px;min-width:0}
+body #areaModal #journeyDestination[hidden]{display:none!important}
+body #areaModal .fmn-state-field{display:flex!important;flex-direction:column;gap:5px;min-width:0}
+body #areaModal .fmn-state-field label,body #areaModal .field>label{font:700 12px/1.35 system-ui,sans-serif!important;color:#52645a!important;letter-spacing:0!important;margin:0!important}
+body #areaModal .fmn-location-action{min-height:48px!important;max-width:100%;white-space:normal!important;line-height:1.35!important;text-align:center!important}
+body #areaModal .location-recovery{margin:0!important}
+body #areaModal .location-recovery button{min-height:44px!important;font-size:13px!important;padding:8px 10px!important}
+body #areaModal #locationStatus{font:500 13px/1.45 system-ui,sans-serif!important;padding:9px 11px!important;margin:4px 0 7px!important}
+body #areaModal .suggestions button,body #areaModal .journey-result{min-height:44px!important;font-size:13px!important;line-height:1.4!important;overflow-wrap:anywhere}
+body #areaModal .region-row{display:flex;flex-wrap:wrap;gap:8px!important}
+body #areaModal .region-heading{font:700 13px/1.35 system-ui,sans-serif!important;color:#52645a!important;margin:4px 0 0!important}
+body #areaModal .region-row .region{min-height:44px!important;padding:8px 11px!important;font-size:13px!important;border-radius:10px!important}
+body #areaModal .popup-footer button{min-height:48px!important;font-size:14px!important}
+@media (max-width:350px){body #areaModal .fmn-unified-section{padding:11px}body #areaModal .fmn-unified-grid{gap:7px}body #areaModal .fmn-search-field input,body #areaModal .fmn-search-field select{font-size:14px!important;padding:10px 8px!important}}
+@media (min-width:560px){body #areaModal .popup-scroll{padding:16px 22px!important}body #areaModal .fmn-unified-section{padding:16px}body #areaModal .fmn-unified-grid{gap:12px}}
+@media (max-height:480px){body #areaModal .fmn-unified-section{padding:10px;margin-bottom:9px;gap:7px}body #areaModal .location-heading{padding:8px 14px!important}body #areaModal .fmn-vehicle-detail-body{padding:9px}}
+
