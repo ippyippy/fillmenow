@@ -5,12 +5,12 @@ for(const [old,next] of [['assertEquals("64",json("document.querySelector(\'.top
 const old='tap("#mapStationCount");waitFor("document.body.dataset.page===\'options\'",10);';
 assert(s.includes(old));s=s.replace(old,'assertEquals("Truck-only is mandatory in native app","\\\"truckstops\\\"",json("FMNNearbyUI.getFilters().access"));\n   '+old);
 fs.writeFileSync(file,s);
-// page.evaluate awaits returned Promises; start the real refresh without returning it so loading can be measured.
-const browser='tools/native-map-clarity-test.cjs';let test=fs.readFileSync(browser,'utf8');assert(test.includes('await p.evaluate(()=>FD.refresh());'));test=test.replace('await p.evaluate(()=>FD.refresh());','await p.evaluate(()=>{FD.refresh();});');
-const dismiss="await p.waitForFunction(()=>document.getElementById('dashSpeech').hidden);";assert(test.includes(dismiss));test=test.replace(dismiss,dismiss+"assert.equal(await p.locator('#dashSpeechTail').isVisible(),false,'SVG tail must dismiss with speech');");
-const pageCheck="await p.waitForFunction(()=>document.body.dataset.page==='options');";assert(test.includes(pageCheck));test=test.replace(pageCheck,pageCheck+"assert.equal(await p.locator('#dashSpeechTail').isVisible(),false,'No orphan speech tail on Nearby');");
-const oldTap="const mapbox=await p.locator('#exploreMap').boundingBox();await p.mouse.click(mapbox.x+mapbox.width/2,mapbox.y+mapbox.height*.45);";
-assert(test.includes(oldTap));test=test.replace(oldTap,"const point=await p.evaluate(()=>{const r=document.getElementById('exploreMap').getBoundingClientRect();for(const fx of [.08,.25,.75])for(const fy of [.4,.55,.7]){const x=r.left+r.width*fx,y=r.top+r.height*fy;if(document.elementFromPoint(x,y)?.classList.contains('maplibregl-canvas'))return {x,y};}throw Error('No visible empty canvas target');});await p.mouse.click(point.x,point.y);");fs.writeFileSync(browser,test);
+// Browser source now directly owns its refresh and exposed-canvas click checks; do not rewrite them during build.
+const browser='tools/native-map-clarity-test.cjs';let test=fs.readFileSync(browser,'utf8');
+assert(test.includes('await p.evaluate(()=>{FD.refresh();});'),'Observe the pending refresh without waiting for its completion');
+assert(test.includes("document.elementFromPoint(x,y)"),'Dismissal must use an exposed map pixel');
+assert(test.includes("p.locator('#dashSpeechTail').isVisible(),false"),'The speech tail must disappear with the bubble');
+const pageCheck="await p.waitForFunction(()=>document.body.dataset.page==='options');";assert(test.includes(pageCheck));test=test.replace(pageCheck,pageCheck+"assert.equal(await p.locator('#dashSpeechTail').isVisible(),false,'No orphan speech tail on Nearby');");fs.writeFileSync(browser,test);
 // Synthetic records only: exercise the actual packaged selector, never write a fake catalogue.
 const sandbox={module:{exports:{}},URL,Date};vm.runInNewContext(fs.readFileSync('native/www/nearby-core.js','utf8'),sandbox);const C=sandbox.module.exports,now=Date.now(),at=new Date(now-1000).toISOString(),expires=new Date(now+86400000).toISOString();
 const row={station_id:'QA-ONLY',state:'QLD',fuel_type:'Diesel',price:200,distance:1,effective:201};const ctx={state:'QLD',fuel:'Diesel',vehicle:'truck',radius:20,tank:250,truck:{height:4.2,width:2.5,length:12.5,weight:12,configuration:'rigid'}};
