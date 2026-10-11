@@ -41,13 +41,18 @@ function canopyAccess(row,ctx,catalog,now=Date.now()){
  if(!truckMode(ctx)||height===null||height<=0||canopy===null||canopy<=0||!https(facility?.canopy_source_url))return 'unknown';
  return height+.1>canopy+1e-9?'mismatch':'unverified';
 }
+function cheapestBand(rows){
+ const valid=rows.filter(r=>!priceReview(r));if(!valid.length)return [];
+ const lowest=valid.reduce((min,r)=>Math.min(min,Number(r.price)),Infinity);
+ return valid.filter(r=>Number(r.price)<=lowest+10+1e-9);
+}
 function select(rows,ctx,filters,catalog,accepted=[],now=Date.now()){
  const f=normaliseFilters(filters,ctx.radius);const list=rows.filter(r=>Number.isFinite(r.distance)&&r.distance>=f.minKm&&r.distance<=f.maxKm&&canopyAccess(r,ctx,catalog,now)!=='mismatch').map(r=>{
   const offers=offersFor(r,ctx,catalog,accepted,now),access=truckAccess(r,ctx,catalog,now),best=offers.find(o=>o.qualifies);
   return {...r,_offers:offers,_access:access,_review:priceReview(r),_dealSaving:best?.saving||0,_facility:facilityFor(r,ctx,catalog,now),_height:heightAccess(r,ctx,catalog,now),_canopy:canopyAccess(r,ctx,catalog,now)};
  }).filter(r=>(f.deals==='all'||r._offers.some(o=>f.deals==='active'||o.qualifies))&&(!truckMode(ctx)||f.access==='all'||(f.access==='matches'&&r._access.status==='match')||(f.access==='height'&&r._height==='height-match')||(f.access==='truckstops'&&r._facility)||(f.access==='unknown'&&r._access.status==='unknown')));
  const cost=r=>Number(r.effective)-((ctx.tank>0?r._dealSaving/ctx.tank:0)*100);
- list.sort((a,b)=>Number(a._review)-Number(b._review)||(f.sort==='distance'?a.distance-b.distance:f.sort==='price'?a.price-b.price:f.sort==='deal'?cost(a)-cost(b):a.effective-b.effective)||String(a.station_id).localeCompare(String(b.station_id)));return list;
+ list.sort((a,b)=>Number(a._review)-Number(b._review)||(f.sort==='distance'?a.distance-b.distance:f.sort==='price'?a.price-b.price:f.sort==='deal'?cost(a)-cost(b):a.effective-b.effective)||String(a.station_id).localeCompare(String(b.station_id)));return f.sort==='price'?cheapestBand(list):list;
 }
 return Object.freeze({number,truckMode,validateTruck,priceReview,normaliseFilters,offersFor,offerKey,truckAccess,heightAccess,facilityFor,canopyAccess,select});
 });

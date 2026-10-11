@@ -42,10 +42,10 @@ body #areaModal #locationHelp{flex:0 0 auto!important;width:auto!important;min-h
 body #areaModal .location-recovery:not(:has(:not([hidden]))){display:none!important}
 body #areaModal #locationStatus:empty,body #areaModal .suggestions:empty{display:none!important}
 body #areaModal .fmn-feature-details{min-width:0;border:1px solid #dce6df;border-radius:10px;background:#f7faf7;overflow:hidden}
-body #areaModal .fmn-feature-details summary{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;padding:9px 11px;box-sizing:border-box;cursor:pointer;list-style:none;font:650 13px/18px system-ui,sans-serif;color:#21402d}
-body #areaModal .fmn-feature-details summary::-webkit-details-marker{display:none}
-body #areaModal .fmn-feature-details summary:after{content:'⌄';font-size:17px}
-body #areaModal .fmn-feature-details[open] summary:after{content:'⌃'}
+body #areaModal .fmn-feature-details>summary{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;padding:9px 11px;box-sizing:border-box;cursor:pointer;list-style:none;font:650 13px/18px system-ui,sans-serif;color:#21402d}
+body #areaModal .fmn-feature-details>summary::-webkit-details-marker{display:none}
+body #areaModal .fmn-feature-details>summary:after{content:'⌄';font-size:17px}
+body #areaModal .fmn-feature-details[open]>summary:after{content:'⌃'}
 body #areaModal #regions{padding:8px!important}
 body #areaModal .fmn-refine-form{padding:10px;display:grid;gap:8px;border-top:1px solid #e0e8e2}
 body #areaModal .fmn-refine-form .fmn-search-field[hidden]{display:none!important}

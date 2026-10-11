@@ -1,0 +1,13 @@
+/* Scale the installed app at normal browser zoom. Viewport dimensions are
+   compensated by the packaging step so maps and overlays still fill the screen. */
+:root{--fmn-ui-scale:.8;zoom:var(--fmn-ui-scale)}
+
+body #areaModal .popup-scroll{display:flex!important;flex-direction:column!important;gap:10px!important}
+body #areaModal .fmn-main-feature{flex:none}
+body #areaModal .fmn-main-feature>summary{min-height:54px;padding:12px 14px}
+body #areaModal .fmn-panel-label{min-width:0;display:grid;gap:4px}
+body #areaModal .fmn-main-feature>summary h3{margin:0!important;font:700 16px/22px system-ui,sans-serif!important;color:#183d26!important}
+body #areaModal .fmn-panel-brief{font:400 12px/17px system-ui,sans-serif;color:#52645a;overflow-wrap:anywhere}
+body #areaModal .fmn-main-feature[open] .fmn-panel-brief{display:none}
+body #areaModal .fmn-main-feature .fmn-unified-section{padding:12px!important;margin:0!important;border:0!important;border-top:1px solid #dce6df!important;border-radius:0!important;background:#fff!important}
+body #areaModal #fmnPopularAreas,body #areaModal #fmnFeatureRefine{flex:none;margin:0!important}

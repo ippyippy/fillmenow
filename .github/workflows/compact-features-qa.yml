@@ -1,4 +1,4 @@
-name: FillMeNow compact Features Android build and regression
+name: FillMeNow 80 percent scale and collapsible panels regression
 on:
   push:
     branches: [feature/compact-features-20261011]
@@ -18,9 +18,9 @@ jobs:
           fetch-depth: 0
       - name: Build packaged native UI while preserving GPS
         run: |
-          node tools/native-compact-features-prepare.mjs
+          node tools/native-scaled-panels-prepare.mjs
           node tools/truck-network-test.cjs
-          node tools/map-clarity-native-test-prepare.mjs
+          node tools/cheapest-band-test.cjs
           node tools/direct-native-unit.mjs
           git diff --check
           git diff --exit-code 244f8f1aadc10b1bcf0044c57371a8a8ba1e0ca4 -- backend ios native/entry.mjs native/location-facade.mjs
@@ -36,7 +36,7 @@ jobs:
           node tools/native-map-clarity-test.cjs
           node tools/native-unified-search-test.cjs
           node tools/native-ux-controls-test.cjs
-          node tools/native-compact-features-test.cjs
+          node tools/native-scaled-panels-test.cjs
       - name: Set up pinned Android tools
         run: |
           set -euo pipefail
@@ -56,13 +56,13 @@ jobs:
           set -euo pipefail
           mkdir -p ux-package ux-evidence
           BT="$ANDROID_HOME/build-tools/36.0.0"
-          "$BT/zipalign" -f -p 4 android/app/build/outputs/apk/release/app-release-unsigned.apk ux-package/FillMeNow-compact-features-unsigned.apk
+          "$BT/zipalign" -f -p 4 android/app/build/outputs/apk/release/app-release-unsigned.apk ux-package/FillMeNow-scaled-panels-unsigned.apk
           cp "$BT/lib/apksigner.jar" ux-package/
-          "$BT/aapt" dump badging ux-package/FillMeNow-compact-features-unsigned.apk > ux-evidence/apk-badging.txt
-          "$BT/aapt" dump permissions ux-package/FillMeNow-compact-features-unsigned.apk > ux-evidence/permissions.txt
+          "$BT/aapt" dump badging ux-package/FillMeNow-scaled-panels-unsigned.apk > ux-evidence/apk-badging.txt
+          "$BT/aapt" dump permissions ux-package/FillMeNow-scaled-panels-unsigned.apk > ux-evidence/permissions.txt
           ! grep -q ACCESS_BACKGROUND_LOCATION ux-evidence/permissions.txt
           keytool -genkeypair -keystore /tmp/emulator-only.jks -storepass emulator-only-pass -keypass emulator-only-pass -alias qa -dname 'CN=Disposable Emulator Test' -keyalg RSA -validity 2 >/dev/null 2>&1
-          "$BT/apksigner" sign --ks /tmp/emulator-only.jks --ks-pass pass:emulator-only-pass --out /tmp/fmn-app.apk ux-package/FillMeNow-compact-features-unsigned.apk
+          "$BT/apksigner" sign --ks /tmp/emulator-only.jks --ks-pass pass:emulator-only-pass --out /tmp/fmn-app.apk ux-package/FillMeNow-scaled-panels-unsigned.apk
           TEST_APK="$(find android/app/build/outputs/apk/androidTest -name '*.apk' | head -1)"
           "$BT/apksigner" sign --ks /tmp/emulator-only.jks --ks-pass pass:emulator-only-pass --out /tmp/fmn-test.apk "$TEST_APK"
       - name: Start disposable Android emulator
@@ -105,7 +105,7 @@ jobs:
           (cd ux-package && sha256sum *.apk *.jar > SHA256SUMS.txt)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: FillMeNow-compact-features-passing-build
+          name: FillMeNow-scaled-panels-passing-build
           path: ux-package/
           retention-days: 7
       - name: Preserve screenshots and reports
@@ -116,7 +116,7 @@ jobs:
           cp -r map-clarity-qa ux-evidence/ 2>/dev/null || true
           cp -r unified-search-qa ux-evidence/ 2>/dev/null || true
           cp -r native-ux-qa ux-evidence/ 2>/dev/null || true
-          cp -r compact-features-qa ux-evidence/ 2>/dev/null || true
+          cp -r scaled-panels-qa ux-evidence/ 2>/dev/null || true
           timeout 15 adb pull /sdcard/Android/data/au.com.fillmenow.app/files/native-map-qa ux-evidence/ || true
           timeout 15 adb pull /sdcard/Android/data/au.com.fillmenow.app/files/native-polish-qa ux-evidence/ || true
           cp android/app/build/reports/lint-results-release.* ux-evidence/ 2>/dev/null || true
@@ -125,7 +125,7 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: FillMeNow-compact-features-evidence
+          name: FillMeNow-scaled-panels-evidence
           path: ux-evidence/
           retention-days: 7
       - name: Stop emulator
