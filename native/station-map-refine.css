@@ -1,0 +1,40 @@
+/* Horizontal native station badges. No transform overrides, opacity animation or clustering. */
+html[data-native-polish] body #page-explore #exploreMap button.price-marker.station-pin{
+ --pin-width:88px;--pin-height:44px;--logo-size:28px;--price-size:15px;
+ width:var(--pin-width)!important;min-width:var(--pin-width)!important;max-width:var(--pin-width)!important;
+ height:var(--pin-height)!important;min-height:var(--pin-height)!important;max-height:var(--pin-height)!important;
+ display:grid!important;grid-template-columns:var(--logo-size) minmax(0,1fr)!important;grid-template-rows:1fr!important;
+ align-items:center!important;justify-content:center!important;column-gap:4px!important;row-gap:0!important;
+ padding:3px 4px!important;border-radius:10px!important;box-sizing:border-box!important;
+ animation:none!important;transition:none!important;will-change:auto!important;
+}
+html[data-native-polish] body #page-explore #exploreMap button.price-marker.station-pin.cheapest:not(.best){--pin-width:92.4px;--pin-height:46.2px}
+html[data-native-polish] body #page-explore #exploreMap button.price-marker.station-pin.best{--pin-width:105.6px;--pin-height:52.8px;--logo-size:30px;--price-size:18px;box-shadow:0 0 0 2px #08753228,0 2px 6px #17332638!important}
+html[data-native-polish] body #page-explore #exploreMap button.price-marker.station-pin:not([data-marker-kind=normal]).pin-detail{grid-template-rows:11px minmax(0,1fr)!important}
+html[data-native-polish] body #page-explore #exploreMap button.price-marker.station-pin .brand-mark{
+ width:var(--logo-size)!important;min-width:var(--logo-size)!important;max-width:var(--logo-size)!important;height:var(--logo-size)!important;min-height:var(--logo-size)!important;max-height:var(--logo-size)!important;
+ grid-column:1!important;grid-row:1!important;padding:1px!important;flex:none!important;border-radius:4px!important;
+}
+html[data-native-polish] body #page-explore #exploreMap button.price-marker.station-pin .pin-price{
+ grid-column:2!important;grid-row:1!important;font-size:var(--price-size)!important;line-height:22px!important;letter-spacing:-.4px!important;
+ white-space:nowrap!important;padding:0 2px!important;min-width:0!important;text-align:center!important;
+}
+html[data-native-polish] body #page-explore #exploreMap button.price-marker.station-pin .pin-price small{font-size:10px!important;line-height:1!important}
+html[data-native-polish] body #page-explore #exploreMap button.price-marker.station-pin:not([data-marker-kind=normal]).pin-detail .brand-mark,
+html[data-native-polish] body #page-explore #exploreMap button.price-marker.station-pin:not([data-marker-kind=normal]).pin-detail .pin-price{grid-row:2!important}
+html[data-native-polish] body #page-explore #exploreMap button.price-marker.station-pin .pin-value-label{
+ position:static!important;inset:auto!important;transform:none!important;grid-column:1 / -1!important;grid-row:1!important;
+ justify-self:stretch!important;padding:0 2px!important;border:0!important;background:transparent!important;
+ color:#165a30!important;font-size:10px!important;line-height:11px!important;white-space:nowrap!important;text-align:center!important;
+ max-width:100%!important;overflow:hidden!important;text-overflow:ellipsis!important;
+}
+html[data-native-polish] body #page-explore #exploreMap button.price-marker.station-pin .pin-secondary-tags{display:none!important}
+html[data-native-polish] body #page-explore #exploreMap button.price-marker.station-pin.pin-compact{--pin-width:54px;--pin-height:44px;--logo-size:32px;grid-template-columns:1fr!important;grid-template-rows:1fr!important}
+html[data-native-polish] body #page-explore #exploreMap button.price-marker.station-pin.pin-compact.cheapest:not(.best){--pin-width:56.7px;--pin-height:46.2px}
+html[data-native-polish] body #page-explore #exploreMap button.price-marker.station-pin.pin-compact.best{--pin-width:64.8px;--pin-height:52.8px;--logo-size:33px;grid-template-rows:11px 1fr!important}
+html[data-native-polish] body #page-explore #exploreMap button.price-marker.station-pin.pin-compact .brand-mark{grid-column:1!important;grid-row:1!important;justify-self:center!important}
+html[data-native-polish] body #page-explore #exploreMap button.price-marker.station-pin.pin-compact.best .brand-mark{grid-row:2!important}
+html[data-native-polish] body #page-explore #exploreMap button.price-marker.station-pin.pin-compact .pin-price,
+html[data-native-polish] body #page-explore #exploreMap button.price-marker.station-pin.pin-compact:not(.best) .pin-value-label{display:none!important}
+html[data-native-polish] body #page-explore #exploreMap button.price-marker.station-pin.pin-compact.best .pin-value-label{font-size:9px!important;letter-spacing:-.3px!important}
+.saved-truck-notice{margin:12px 0;padding:12px 14px;border:1px solid #c9d8ce;border-radius:12px;background:#f4f8f5;color:#354b3b;font-size:14px;line-height:1.45}
