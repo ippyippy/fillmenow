@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 android {
  namespace 'au.com.fillmenow.app'
  compileSdk 36
- defaultConfig { applicationId 'au.com.fillmenow.app'; minSdk 24; targetSdk 36; versionCode 3; versionName '1.2.0-direct-gps-test'; testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner' }
+ defaultConfig { applicationId 'au.com.fillmenow.app'; minSdk 24; targetSdk 36; versionCode 4; versionName '1.2.1-visual-test'; testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner' }
  buildTypes { release { minifyEnabled true; proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro' } }
  testBuildType 'release'
  compileOptions { sourceCompatibility JavaVersion.VERSION_21; targetCompatibility JavaVersion.VERSION_21 }

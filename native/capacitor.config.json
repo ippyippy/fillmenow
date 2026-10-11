@@ -12,5 +12,12 @@
     "androidScheme": "https",
     "cleartext": false
   },
-  "loggingBehavior": "none"
+  "loggingBehavior": "none",
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "disable",
+      "style": "LIGHT",
+      "hidden": false
+    }
+  }
 }

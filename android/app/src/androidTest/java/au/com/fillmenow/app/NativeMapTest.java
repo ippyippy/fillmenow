@@ -51,9 +51,14 @@ public class NativeMapTest {
  private File dir(){File d=new File(InstrumentationRegistry.getInstrumentation().getTargetContext().getExternalFilesDir(null),"native-map-qa");d.mkdirs();return d;}
  private void screen(String name){device.takeScreenshot(new File(dir(),name+".png"));}
  private void grantDialog(boolean allow)throws Exception{
-  UiObject2 choice=device.wait(Until.findObject(By.res(Pattern.compile(".*:id/permission_"+(allow?"allow_foreground_only":"deny")+"_button"))),20000);assertNotNull("Expected the actual Android permission dialog",choice);
-  if(allow){UiObject2 precise=device.findObject(By.text("Precise"));if(precise!=null)precise.click();}
+  BySelector button=By.res(Pattern.compile(".*:id/permission_"+(allow?"allow_foreground_only":"deny")+"_button")).enabled(true);
+  UiObject2 choice=device.wait(Until.findObject(button),20000);assertNotNull("Expected the actual Android permission dialog",choice);
+  if(allow){UiObject2 precise=device.findObject(By.text("Precise"));if(precise!=null)precise.click();device.waitForIdle(1000);}
+  // Selecting Precise can recreate permission-controller nodes. Reacquire the visible button.
+  choice=device.wait(Until.findObject(button),5000);assertNotNull("Permission choice must remain visible",choice);
   screen(allow?"02-android-precise-allow":"01-android-permission-deny");choice.click();
+  assertTrue("Android permission dialog did not finish",device.wait(Until.gone(button),10000));
+  if(allow){Context context=InstrumentationRegistry.getInstrumentation().getTargetContext();long end=SystemClock.elapsedRealtime()+5000;while(context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED&&SystemClock.elapsedRealtime()<end)SystemClock.sleep(100);assertEquals("Android must really grant precise permission",PackageManager.PERMISSION_GRANTED,context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION));}
  }
  @Test public void nativePositionsMoveTheExistingMap()throws Exception{
   assertTrue("CI emulator only",android.os.Build.FINGERPRINT.contains("generic")||android.os.Build.MODEL.contains("sdk")||android.os.Build.PRODUCT.contains("sdk"));device.executeShellCommand("cmd location set-location-enabled true");scenario=ActivityScenario.launch(MainActivity.class);
@@ -74,7 +79,7 @@ public class NativeMapTest {
    JSONObject after=new JSONObject(json("({updates:FMNNativeLocation.diagnostics().updates,lng:FMNJourneyApp.getLocation().lng,camera:FMNJourneyApp.getMap().getCenter().lng,accuracy:FMNNativeLocation.diagnostics().accuracy,following:FMNLiveLocation.getState().following})"));
    assertTrue(after.getDouble("accuracy")<=50);assertTrue(after.getBoolean("following"));assertNotEquals(before.getDouble("camera"),after.getDouble("camera"),0.000005);
    waitFor("(()=>{const m=FMNJourneyApp.getMap(),l=FMNJourneyApp.getLocation(),p=m.project([l.lng,l.lat]),r=m.getContainer().getBoundingClientRect();return p.x>0&&p.x<r.width&&p.y>0&&p.y<r.height})()",10);screen("03-native-gps-moving-real-map");
-   tap("#followToggle");waitFor("!FMNNativeLocation.diagnostics().watching&&FMNNativeLocation.diagnostics().subscribers===0&&!FMNLiveLocation.getState().following",10);
+   tap("#recenterBtn");waitFor("!FMNNativeLocation.diagnostics().watching&&FMNNativeLocation.diagnostics().subscribers===0&&!FMNLiveLocation.getState().following",10);
    int stopped=new JSONObject(json("FMNNativeLocation.diagnostics()")).getInt("updates");SystemClock.sleep(2000);assertEquals(stopped,new JSONObject(json("FMNNativeLocation.diagnostics()")).getInt("updates"));
    tap("#topArea");tap("#areaGps");waitFor("!document.querySelector('#areaModal.open')&&FMNNativeLocation.diagnostics().updates>"+stopped,35);waitFor("FMNNativeLocation.diagnostics().subscribers===0",10);assertFalse(Boolean.parseBoolean(json("FMNLiveLocation.getState().following")));
    tap("#recenterBtn");waitFor("FMNLiveLocation.getState().following",30);
@@ -89,7 +94,7 @@ public class NativeMapTest {
    UiObject2 message=device.wait(Until.findObject(By.res(Pattern.compile("(android|com.google.android.gms):id/message"))),20000);assertNotNull("Expected Google system location-settings resolution",message);assertEquals("com.google.android.gms",message.getApplicationPackage());assertTrue(message.getText().toLowerCase().contains("location"));
    UiObject2 approval=device.findObject(By.res("android","button1"));assertNotNull("System Location-on approval button missing",approval);screen("05-native-system-location-on");approval.click();
    waitFor("FMNLiveLocation.getState().following&&FMNNativeLocation.diagnostics().updates>=2",40);screen("06-map-after-system-location-recovery");
-   tap("#followToggle");waitFor("FMNNativeLocation.diagnostics().subscribers===0&&!FMNLiveLocation.getState().following",10);
+   tap("#recenterBtn");waitFor("FMNNativeLocation.diagnostics().subscribers===0&&!FMNLiveLocation.getState().following",10);
    System.out.println("PASS: actual Android denial/precise approval; browser GPS disabled; native updates move both map origin and camera; Stop and one-shot Search use same provider; foreground stop; preferences retained; genuine system Location-on consent returns to native map following. Emulator positions, not physical reception.");
   }catch(Throwable t){screen("failure");try{device.dumpWindowHierarchy(new File(dir(),"failure-hierarchy.xml"));}catch(Exception ignored){}try(FileOutputStream f=new FileOutputStream(new File(dir(),"failure-state.json"))){f.write(json("({ready:document.readyState,page:document.body?.dataset.page,onboarded:localStorage.getItem('fmnOnboarded'),controls:!!document.getElementById('recenterBtn'),native:window.FMNNativeLocation?.diagnostics(),follow:window.FMNLiveLocation?.getState(),onboarding:!!document.querySelector('#fmnOnboard.open')})").getBytes(StandardCharsets.UTF_8));}catch(Exception ignored){}throw t;}finally{if(scenario!=null)scenario.close();}
  }

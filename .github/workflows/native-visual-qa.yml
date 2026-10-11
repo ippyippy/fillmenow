@@ -1,0 +1,136 @@
+name: FillMeNow native visual polish and GPS regression
+on:
+  push:
+    branches: [feature/native-visual-polish-20261011]
+    paths: ['native/visual-*', 'tools/native-visual-*', 'tools/native-layout-*', 'android/app/src/androidTest/**', '.github/workflows/native-visual-qa.yml']
+permissions:
+  contents: read
+concurrency:
+  group: fillmenow-native-visual-qa
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Prepare scoped native UI with unchanged GPS source
+        run: |
+          node tools/native-visual-prepare.mjs
+          node tools/direct-native-unit.mjs
+          git diff --check
+          git diff --exit-code 84b1775e3b9f7803fa5a6b5dc0d38854c0dc987a -- web backend ios native/entry.mjs native/location-facade.mjs
+      - name: Install isolated browser layout tools
+        run: |
+          mkdir -p /tmp/fmn-layout
+          npm install --prefix /tmp/fmn-layout --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          /tmp/fmn-layout/node_modules/.bin/playwright install --with-deps chromium webkit >/dev/null
+      - name: Check compact map and shared screens in browser fixtures
+        env:
+          NODE_PATH: /tmp/fmn-layout/node_modules
+        run: node tools/native-visual-browser.cjs
+      - name: Set up pinned Android tools
+        run: |
+          set -euo pipefail
+          echo "JAVA_HOME=$JAVA_HOME_21_X64" >> "$GITHUB_ENV"
+          echo "$JAVA_HOME_21_X64/bin" >> "$GITHUB_PATH"
+          curl --proto '=https' --proto-redir '=https' --tlsv1.2 -fsSL https://services.gradle.org/distributions/gradle-8.14.3-bin.zip -o /tmp/gradle.zip
+          EXPECTED="$(curl --proto '=https' --proto-redir '=https' --tlsv1.2 -fsSL https://services.gradle.org/distributions/gradle-8.14.3-bin.zip.sha256)"
+          echo "$EXPECTED  /tmp/gradle.zip" | sha256sum -c -
+          unzip -q /tmp/gradle.zip -d /tmp
+          echo /tmp/gradle-8.14.3/bin >> "$GITHUB_PATH"
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-36' 'build-tools;36.0.0' 'platform-tools' 'emulator' 'system-images;android-35;google_apis;x86_64' >/dev/null
+          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
+      - name: Compile release APK and actual Android tests
+        run: gradle -p android --no-daemon :app:assembleRelease :app:assembleReleaseAndroidTest :app:lintRelease --stacktrace
+      - name: Sign disposable emulator copies
+        run: |
+          set -euo pipefail
+          mkdir -p native-visual-package native-visual-qa
+          BT="$ANDROID_HOME/build-tools/36.0.0"
+          "$BT/zipalign" -f -p 4 android/app/build/outputs/apk/release/app-release-unsigned.apk native-visual-package/FillMeNow-visual-unsigned.apk
+          cp "$BT/lib/apksigner.jar" native-visual-package/
+          "$BT/aapt" dump badging native-visual-package/FillMeNow-visual-unsigned.apk > native-visual-qa/apk-badging.txt
+          "$BT/aapt" dump permissions native-visual-package/FillMeNow-visual-unsigned.apk > native-visual-qa/permissions.txt
+          ! grep -q ACCESS_BACKGROUND_LOCATION native-visual-qa/permissions.txt
+          keytool -genkeypair -keystore /tmp/emulator-only.jks -storepass emulator-only-pass -keypass emulator-only-pass -alias qa -dname 'CN=Disposable Emulator Test' -keyalg RSA -validity 2 >/dev/null 2>&1
+          "$BT/apksigner" sign --ks /tmp/emulator-only.jks --ks-pass pass:emulator-only-pass --out /tmp/fmn-app.apk native-visual-package/FillMeNow-visual-unsigned.apk
+          TEST_APK="$(find android/app/build/outputs/apk/androidTest -name '*.apk' | head -1)"
+          "$BT/apksigner" sign --ks /tmp/emulator-only.jks --ks-pass pass:emulator-only-pass --out /tmp/fmn-test.apk "$TEST_APK"
+      - name: Start Android emulator
+        timeout-minutes: 5
+        run: |
+          set -euo pipefail
+          sudo chmod 666 /dev/kvm
+          export ANDROID_USER_HOME="$HOME/.android" ANDROID_AVD_HOME="$HOME/.android/avd"
+          mkdir -p "$ANDROID_AVD_HOME"
+          echo no | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd --force -n fmn-visual -k 'system-images;android-35;google_apis;x86_64' --device pixel_6
+          nohup "$ANDROID_HOME/emulator/emulator" -avd fmn-visual -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect -accel on > /tmp/fmn-visual-emulator.log 2>&1 &
+          timeout 180 adb wait-for-device
+          for i in $(seq 1 90); do test "$(timeout 5 adb shell getprop sys.boot_completed | tr -d '\r')" = 1 && break; sleep 2; done
+          test "$(timeout 5 adb shell getprop sys.boot_completed | tr -d '\r')" = 1
+          adb shell input keyevent 82
+          adb shell settings put global window_animation_scale 0
+          adb shell settings put global transition_animation_scale 0
+          adb shell settings put global animator_duration_scale 0
+      - name: Verify native movement, system insets, keyboard and all-screen flows
+        timeout-minutes: 8
+        run: |
+          set -euo pipefail
+          adb install /tmp/fmn-app.apk
+          adb install /tmp/fmn-test.apk
+          python3 - <<'PY' &
+          import subprocess,time
+          for i in range(480):
+              subprocess.run(['adb','emu','geo','fix',str(153.025+(i%80)*.0001),'-27.47'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+              time.sleep(1)
+          PY
+          FEED=$!
+          trap 'kill "$FEED" 2>/dev/null || true' EXIT
+          timeout 420 adb shell am instrument -w -r au.com.fillmenow.app.test/androidx.test.runner.AndroidJUnitRunner | tee native-visual-qa/instrumentation.txt
+          grep -q 'OK (2 tests)' native-visual-qa/instrumentation.txt
+      - name: Record only passing candidate source and payload
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/feature/native-visual-polish-20261011
+          git add android/build.gradle android/settings.gradle android/app/build.gradle android/app/proguard-rules.pro android/app/src/main/AndroidManifest.xml android/app/src/main/java android/app/src/main/res/values/styles.xml android/app/src/androidTest/java/au/com/fillmenow/app/NativeMapTest.java native/package.json native/package-lock.json native/capacitor.config.json
+          if ! git diff --cached --quiet; then
+            git -c user.name='FillMeNow QA' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Apply passing native container insets and compact visual build'
+            git -c credential.helper='!gh auth git-credential' push origin HEAD:refs/heads/feature/native-visual-polish-20261011
+          fi
+          git rev-parse HEAD > native-visual-package/source-commit.txt
+          cp native-visual-qa/instrumentation.txt native-visual-package/
+          (cd native-visual-package && sha256sum *.apk *.jar > SHA256SUMS.txt)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: FillMeNow-native-visual-passing-build
+          path: native-visual-package/
+          retention-days: 7
+      - name: Preserve actual screenshots and test reports
+        if: always()
+        timeout-minutes: 1
+        run: |
+          mkdir -p native-visual-qa
+          cp -r visual-browser-qa native-visual-qa/ 2>/dev/null || true
+          timeout 15 adb pull /sdcard/Android/data/au.com.fillmenow.app/files/native-map-qa native-visual-qa/ || true
+          timeout 15 adb pull /sdcard/Android/data/au.com.fillmenow.app/files/native-polish-qa native-visual-qa/ || true
+          cp android/app/build/reports/lint-results-release.* native-visual-qa/ 2>/dev/null || true
+          cp /tmp/fmn-visual-emulator.log native-visual-qa/ 2>/dev/null || true
+          timeout 10 adb logcat -d -t 400 > native-visual-qa/emulator-log.txt 2>/dev/null || true
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: FillMeNow-native-visual-evidence
+          path: native-visual-qa/
+          retention-days: 7
+      - name: Stop emulator
+        if: always()
+        timeout-minutes: 1
+        run: timeout 10 adb emu kill || true
