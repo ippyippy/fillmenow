@@ -48,6 +48,7 @@ body #areaModal .fmn-feature-details summary:after{content:'⌄';font-size:17px}
 body #areaModal .fmn-feature-details[open] summary:after{content:'⌃'}
 body #areaModal #regions{padding:8px!important}
 body #areaModal .fmn-refine-form{padding:10px;display:grid;gap:8px;border-top:1px solid #e0e8e2}
+body #areaModal .fmn-refine-form .fmn-search-field[hidden]{display:none!important}
 body #areaModal .fmn-refine-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 body #areaModal .fmn-refine-actions button{min-height:44px;padding:8px;border:1px solid #bdcec1;border-radius:9px;background:#fff;color:#21402d;font:650 13px/18px system-ui,sans-serif;cursor:pointer}
 body #areaModal #fmnFeatureApply{background:#087532;color:#fff;border-color:#087532}

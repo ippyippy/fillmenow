@@ -40,6 +40,8 @@ try{
  await page.screenshot({path:path.join(dir,engine+'-'+w+'-features.png')});
  rec.checks.push('One 44px header Locate; Features opens above expanded Best Stop; no gear, zoom buttons or info icon; readable fields without overflow; map credits retained');
  await page.locator('#fmnFeatureRefine summary').click();
+ await page.locator('#fmnSearchVehicle').selectOption('car');await page.waitForFunction(()=>document.getElementById('fmnFeatureAccess').closest('label').hidden);assert.equal(await page.locator('#fmnFeatureAccess').isVisible(),false);
+ await page.locator('#fmnSearchVehicle').selectOption('truck');await page.waitForFunction(()=>!document.getElementById('fmnFeatureAccess').closest('label').hidden);assert.equal(await page.locator('#fmnFeatureAccess').isVisible(),true);
  await page.locator('#fmnFeatureSort').selectOption('price');await page.locator('#fmnFeatureMinKm').fill('0');await page.locator('#fmnFeatureMaxKm').fill('30');await page.locator('#fmnFeatureApply').click();
  await page.waitForFunction(()=>FMNNearbyUI.getFilters().sort==='price'&&FMNNearbyUI.getFilters().maxKm===30);
  assert.equal(await page.evaluate(()=>FMNNearbyApp.getPrefs().radius),30);
