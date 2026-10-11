@@ -35,13 +35,19 @@ function heightAccess(row,ctx,catalog,now=Date.now()){
  if(height===null||!r||r.status!=='verified'||!https(r.source_url)||!Number.isFinite(Date.parse(r.verified_at))||Date.parse(r.verified_at)>now||now-Date.parse(r.verified_at)>90*86400000||!Number.isFinite(Date.parse(r.expires_at))||Date.parse(r.expires_at)<=now||number(r.height)===null)return 'unknown';
  return height+.1<=Number(r.height)+1e-9?'height-match':height>Number(r.height)?'mismatch':'limited';
 }
+// A published canopy height can rule out a tall vehicle, but cannot certify its approach or turning access.
+function canopyAccess(row,ctx,catalog,now=Date.now()){
+ const facility=facilityFor(row,ctx,catalog,now),height=number(ctx.truck?.height),canopy=number(facility?.canopy_height_m);
+ if(!truckMode(ctx)||height===null||height<=0||canopy===null||canopy<=0||!https(facility?.canopy_source_url))return 'unknown';
+ return height+.1>canopy+1e-9?'mismatch':'unverified';
+}
 function select(rows,ctx,filters,catalog,accepted=[],now=Date.now()){
- const f=normaliseFilters(filters,ctx.radius);const list=rows.filter(r=>Number.isFinite(r.distance)&&r.distance>=f.minKm&&r.distance<=f.maxKm).map(r=>{
+ const f=normaliseFilters(filters,ctx.radius);const list=rows.filter(r=>Number.isFinite(r.distance)&&r.distance>=f.minKm&&r.distance<=f.maxKm&&canopyAccess(r,ctx,catalog,now)!=='mismatch').map(r=>{
   const offers=offersFor(r,ctx,catalog,accepted,now),access=truckAccess(r,ctx,catalog,now),best=offers.find(o=>o.qualifies);
-  return {...r,_offers:offers,_access:access,_review:priceReview(r),_dealSaving:best?.saving||0,_facility:facilityFor(r,ctx,catalog,now),_height:heightAccess(r,ctx,catalog,now)};
+  return {...r,_offers:offers,_access:access,_review:priceReview(r),_dealSaving:best?.saving||0,_facility:facilityFor(r,ctx,catalog,now),_height:heightAccess(r,ctx,catalog,now),_canopy:canopyAccess(r,ctx,catalog,now)};
  }).filter(r=>(f.deals==='all'||r._offers.some(o=>f.deals==='active'||o.qualifies))&&(!truckMode(ctx)||f.access==='all'||(f.access==='matches'&&r._access.status==='match')||(f.access==='height'&&r._height==='height-match')||(f.access==='truckstops'&&r._facility)||(f.access==='unknown'&&r._access.status==='unknown')));
  const cost=r=>Number(r.effective)-((ctx.tank>0?r._dealSaving/ctx.tank:0)*100);
  list.sort((a,b)=>Number(a._review)-Number(b._review)||(f.sort==='distance'?a.distance-b.distance:f.sort==='price'?a.price-b.price:f.sort==='deal'?cost(a)-cost(b):a.effective-b.effective)||String(a.station_id).localeCompare(String(b.station_id)));return list;
 }
-return Object.freeze({number,truckMode,validateTruck,priceReview,normaliseFilters,offersFor,offerKey,truckAccess,heightAccess,facilityFor,select});
+return Object.freeze({number,truckMode,validateTruck,priceReview,normaliseFilters,offersFor,offerKey,truckAccess,heightAccess,facilityFor,canopyAccess,select});
 });
