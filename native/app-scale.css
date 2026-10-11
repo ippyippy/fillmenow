@@ -10,3 +10,7 @@ body #areaModal .fmn-panel-brief{font:400 12px/17px system-ui,sans-serif;color:#
 body #areaModal .fmn-main-feature[open] .fmn-panel-brief{display:none}
 body #areaModal .fmn-main-feature .fmn-unified-section{padding:12px!important;margin:0!important;border:0!important;border-top:1px solid #dce6df!important;border-radius:0!important;background:#fff!important}
 body #areaModal #fmnPopularAreas,body #areaModal #fmnFeatureRefine{flex:none;margin:0!important}
+/* Android already resizes the WebView for the keyboard. Do not add the
+   visual viewport's pan offset to this fixed sheet a second time. */
+body #areaModal{top:0!important;bottom:0!important;height:100dvh!important;max-height:100dvh!important}
+body #areaModal .modal.popup-shell{max-height:calc(100dvh - 12px)!important}

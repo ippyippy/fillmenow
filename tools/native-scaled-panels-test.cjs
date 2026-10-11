@@ -49,6 +49,10 @@ try{
  const initial=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth-innerWidth,scroll:document.querySelector('#areaModal .popup-scroll').scrollWidth-document.querySelector('#areaModal .popup-scroll').clientWidth,fields:[...document.querySelectorAll('#areaModal select,#areaModal input')].filter(e=>e.getClientRects().length&&!e.closest('[hidden],[aria-hidden=true],details:not([open])')).map(e=>({id:e.id,w:e.getBoundingClientRect().width,h:e.getBoundingClientRect().height,right:e.getBoundingClientRect().right}))}));
  assert(initial.overflow<=1&&initial.scroll<=1);assert(initial.fields.every(e=>e.w>60&&e.h>=35.1&&e.right<=w+1),JSON.stringify(initial.fields));
  await page.screenshot({path:path.join(dir,engine+'-'+w+'-features.png')});
+ await page.locator('#locationSearch').focus();await page.setViewportSize({width:w,height:Math.min(h,430)});
+ await page.waitForFunction(()=>{const r=document.getElementById('locationSearch').getBoundingClientRect(),f=document.querySelector('#areaModal .popup-footer').getBoundingClientRect();return r.top>=0&&r.bottom<=f.top+1&&f.bottom<=innerHeight+1;});
+ await page.setViewportSize({width:w,height:h});await page.locator('#locationSearch').blur();await page.waitForTimeout(200);
+ rec.checks.push('Focused suburb field and Done footer stay visible when the keyboard reduces the viewport');
  rec.checks.push('One scaled header Locate; Features opens above expanded Best Stop; no gear, zoom buttons or info icon; readable fields without overflow; map credits retained');
  await page.locator('#fmnFeatureRefine summary').click();
  await page.locator('#fmnSearchVehicle').selectOption('car');await page.waitForFunction(()=>document.getElementById('fmnFeatureAccess').closest('label').hidden);assert.equal(await page.locator('#fmnFeatureAccess').isVisible(),false);

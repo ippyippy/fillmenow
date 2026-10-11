@@ -29,6 +29,18 @@ function mount(){
  }
  if(!window.FMNJourneyApp?.getLocation())reveal('fmnJourneyPanel');
  const area=$('areaModal');area.addEventListener('change',()=>queueMicrotask(brief));
+ // Scroll only the form region after Android has resized for the keyboard.
+ function keepFieldVisible(){
+  const field=document.activeElement,scroll=area.querySelector('.popup-scroll');
+  if(!area.classList.contains('open')||!scroll?.contains(field)||!field.matches('input,textarea,select'))return;
+  const r=field.getBoundingClientRect(),b=scroll.getBoundingClientRect(),footer=area.querySelector('.popup-footer').getBoundingClientRect();
+  const bottom=Math.min(b.bottom,footer.top,innerHeight)-8,top=b.top+8;
+  if(r.bottom>bottom)scroll.scrollTop+=r.bottom-bottom;else if(r.top<top)scroll.scrollTop-=top-r.top;
+ }
+ let focusTimer;
+ function revealField(){clearTimeout(focusTimer);focusTimer=setTimeout(()=>requestAnimationFrame(keepFieldVisible),160);}
+ area.addEventListener('focusin',revealField);window.addEventListener('resize',revealField);window.visualViewport?.addEventListener('resize',revealField);
+
  const observer=new MutationObserver(brief);observer.observe(area,{attributes:true,attributeFilter:['class']});
  document.addEventListener('fmn:scope-change',brief);
  window.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
