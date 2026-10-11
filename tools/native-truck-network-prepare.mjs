@@ -1,0 +1,22 @@
+// Package the reviewed network catalogue with the existing unified Search and native GPS.
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+execFileSync(process.execPath,['tools/native-ux-controls-prepare.mjs'],{stdio:'inherit'});
+const gradle='android/app/build.gradle';
+let g=fs.readFileSync(gradle,'utf8');
+assert(g.includes("versionCode 7; versionName '1.2.4-ux-test'"));
+fs.writeFileSync(gradle,g.replace("versionCode 7; versionName '1.2.4-ux-test'","versionCode 8; versionName '1.2.5-truck-network-test'"));
+const entry='native/www/native-entry.js';
+let bundle=fs.readFileSync(entry,'utf8');
+assert(bundle.includes('Android 1.2.4 UX test'));
+fs.writeFileSync(entry,bundle.replaceAll('Android 1.2.4 UX test','Android 1.2.5 truck network test'));
+const ui='native/www/nearby-ui.js';
+let source=fs.readFileSync(ui,'utf8');
+assert.equal(source.split("'Clearance unmeasured'").length-1,1);
+source=source.replace("'Clearance unmeasured'","(x._facility?.canopy_height_m?'Listed canopy: '+x._facility.canopy_height_m+' m':'Access limits unverified')");
+fs.writeFileSync(ui,source);
+const cap=path.resolve('native/node_modules/@capacitor/cli/bin/capacitor');
+execFileSync(process.execPath,[cap,'sync','android'],{cwd:path.resolve('native'),stdio:'inherit'});
+console.log('Native 1.2.5 ready: reviewed truck network, source canopy limits, unified Search and existing native GPS.');
