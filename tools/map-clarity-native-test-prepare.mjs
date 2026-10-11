@@ -1,10 +1,22 @@
 // Change only old visual size expectations to the new approved spec. Native permission/GPS assertions stay unchanged.
-import fs from 'node:fs';import assert from 'node:assert/strict';
+import fs from 'node:fs';import assert from 'node:assert/strict';import vm from 'node:vm';
 const file='android/app/src/androidTest/java/au/com/fillmenow/app/NativePolishTest.java';let s=fs.readFileSync(file,'utf8');
 for(const [old,next] of [['assertEquals("64",json("document.querySelector(\'.topbar.app-topbar\').getBoundingClientRect().height"))','assertEquals("56",json("document.querySelector(\'.topbar.app-topbar\').getBoundingClientRect().height"))'],['assertEquals("68",json("document.querySelector(\'.bottom-nav\').getBoundingClientRect().height"))','assertEquals("60",json("document.querySelector(\'.bottom-nav\').getBoundingClientRect().height"))'],['screen("08-explore-landscape");assertEquals("56"','screen("08-explore-landscape");assertEquals("50"']]){assert(s.includes(old));s=s.replace(old,next);}
 const old='tap("#mapStationCount");waitFor("document.body.dataset.page===\'options\'",10);';
 assert(s.includes(old));s=s.replace(old,'assertEquals("Truck-only is mandatory in native app","\\\"truckstops\\\"",json("FMNNearbyUI.getFilters().access"));\n   '+old);
 fs.writeFileSync(file,s);
-// page.evaluate awaits returned Promises; deliberately start the real refresh without returning it so its loading state can be measured.
-const browser='tools/native-map-clarity-test.cjs';let test=fs.readFileSync(browser,'utf8');assert(test.includes('await p.evaluate(()=>FD.refresh());'));test=test.replace('await p.evaluate(()=>FD.refresh());','await p.evaluate(()=>{FD.refresh();});');fs.writeFileSync(browser,test);
-console.log('Native GPS test unchanged; visual sizes match 1.2.2; native truck-only and in-flight refresh assertions retained.');
+// page.evaluate awaits returned Promises; start the real refresh without returning it so loading can be measured.
+const browser='tools/native-map-clarity-test.cjs';let test=fs.readFileSync(browser,'utf8');assert(test.includes('await p.evaluate(()=>FD.refresh());'));test=test.replace('await p.evaluate(()=>FD.refresh());','await p.evaluate(()=>{FD.refresh();});');
+const dismiss="await p.waitForFunction(()=>document.getElementById('dashSpeech').hidden);";assert(test.includes(dismiss));test=test.replace(dismiss,dismiss+"assert.equal(await p.locator('#dashSpeechTail').isVisible(),false,'SVG tail must dismiss with speech');");
+const pageCheck="await p.waitForFunction(()=>document.body.dataset.page==='options');";assert(test.includes(pageCheck));test=test.replace(pageCheck,pageCheck+"assert.equal(await p.locator('#dashSpeechTail').isVisible(),false,'No orphan speech tail on Nearby');");fs.writeFileSync(browser,test);
+// Synthetic records only: exercise the actual packaged selector, never write a fake catalogue.
+const sandbox={module:{exports:{}},URL,Date};vm.runInNewContext(fs.readFileSync('native/www/nearby-core.js','utf8'),sandbox);const C=sandbox.module.exports,now=Date.now(),at=new Date(now-1000).toISOString(),expires=new Date(now+86400000).toISOString();
+const row={station_id:'QA-ONLY',state:'QLD',fuel_type:'Diesel',price:200,distance:1,effective:201};const ctx={state:'QLD',fuel:'Diesel',vehicle:'truck',radius:20,tank:250,truck:{height:4.2,width:2.5,length:12.5,weight:12,configuration:'rigid'}};
+const facility={station_id:row.station_id,state:'QLD',kind:'operator_listed_truck_stop',source_url:'https://example.com/fixture',checked_at:at,note:'Synthetic test only'};
+const cat={schema_version:1,offers:[],access:[],facilities:[facility]};
+for(const access of ['all','truckstops','unknown']){assert.equal(C.select([row],ctx,{access},cat,[],now).length,1);assert.equal(C.select([row],ctx,{access},{...cat,facilities:[]},[],now).length,0);}
+for(const changed of [{state:'NSW'},{checked_at:new Date(now-91*86400000).toISOString()},{checked_at:expires},{source_url:'http://example.com/fixture'},{kind:'ordinary'}])assert.equal(C.select([row],ctx,{access:'all'},{...cat,facilities:[{...facility,...changed}]},[],now).length,0);
+assert.equal(C.select([row],ctx,{access:'height'},cat,[],now).length,0);assert.equal(C.select([row],ctx,{access:'matches'},cat,[],now).length,0);
+const accessRecord={station_id:row.station_id,state:'QLD',source_url:'https://example.com/fixture',status:'verified',verified_at:at,expires_at:expires,height:3.5,width:3,length:20,weight:40,configurations:['rigid'],turning_access_verified:true};
+assert.equal(C.select([row],ctx,{access:'all'},{...cat,access:[accessRecord]},[],now).length,0);assert.equal(C.select([row],ctx,{access:'matches'},{...cat,access:[{...accessRecord,height:4.5}]},[],now).length,1);assert.equal(C.select([row],{...ctx,vehicle:'car'},{access:'all'},{...cat,facilities:[]},[],now).length,1);assert.equal(C.select([row],{...ctx,vehicle:'heavy'},{access:'all'},{...cat,facilities:[]},[],now).length,0);
+console.log('PASS: 17 truck-facility selector checks, strict dimensions and car/heavy modes. Native GPS assertions unchanged; SVG dismissal and in-flight refresh measured.');
