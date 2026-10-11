@@ -1,7 +1,8 @@
 'use strict';
 const fs=require('fs'),assert=require('node:assert/strict');
 const browser='tools/native-marker-browser.cjs';let b=fs.readFileSync(browser,'utf8');
-b=b.replace('assert.equal(geometry.normal.w,88);assert.equal(geometry.normal.h,44);','assert.ok(Math.abs(geometry.normal.w-88)<.05);assert.ok(Math.abs(geometry.normal.h-44)<.05);').replaceAll('#nearbyResetButton','#nearbyReset');fs.writeFileSync(browser,b);
+b=b.replace('assert.equal(geometry.normal.w,88);assert.equal(geometry.normal.h,44);','assert.ok(Math.abs(geometry.normal.w-88)<.05);assert.ok(Math.abs(geometry.normal.h-44)<.05);').replaceAll('#nearbyResetButton','#nearbyReset');
+if(!b.includes('async function openOptions')){b=b.replaceAll("await p.locator('#mapStationCount').click()","await openOptions(p)");b=b.replace('async function ids(p)',"async function openOptions(p){if(await p.locator('#mobileSheet').evaluate(e=>!e.classList.contains('is-collapsed'))){await p.locator('#sheetHandle').click();await p.waitForFunction(()=>document.getElementById('mobileSheet').classList.contains('is-collapsed'));}await p.locator('#mapStationCount').click();}\nasync function ids(p)");}fs.writeFileSync(browser,b);
 const test='android/app/src/androidTest/java/au/com/fillmenow/app/NativePolishTest.java';let s=fs.readFileSync(test,'utf8');const anchor='   tap("#mapStationCount");waitFor("document.body.dataset.page===\'options\'",10);';
 if(!s.includes('MARKER_TRUCK_ACCEPTANCE')){assert.equal(s.split(anchor).length,2);s=s.replace(anchor,`   // MARKER_TRUCK_ACCEPTANCE: actual packaged app, existing native profile and live read-only catalogue.
    assertEquals("No non-facility pins in Truck mode","true",json("[...document.querySelectorAll('#exploreMap .station-pin')].every(e=>FMNNearbyUI.isTruckStation({station_id:e.dataset.stationId,state:'QLD'}))"));
