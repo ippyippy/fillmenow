@@ -1,0 +1,87 @@
+/* Compact controls keep 44px targets, one scroll region and readable native inputs. */
+body #topArea[hidden],body #mapSettingsBtn,body #page-explore .map-tools-bottom{display:none!important}
+body .topbar.app-topbar #recenterBtn{display:flex!important;align-items:center;justify-content:center;width:44px!important;min-width:44px!important;max-width:44px!important;height:44px!important;min-height:44px!important;margin-left:auto!important;padding:10px!important;border:1px solid #d8e2db!important;border-radius:12px!important;background:#fff!important;color:#087532!important;box-shadow:0 2px 8px #15241b12!important;cursor:pointer;flex:0 0 44px!important}
+body .topbar.app-topbar #recenterBtn svg{width:24px!important;height:24px!important;flex:0 0 24px!important}
+body .topbar.app-topbar #recenterBtn span{display:none!important}
+body .topbar.app-topbar #recenterBtn.following{background:#087532!important;color:#fff!important;border-color:#087532!important}
+body #nativeStatus{right:120px!important;max-width:calc(100% - 130px)!important}
+body #mapBottomDock{max-width:calc(100% - 105px)!important;gap:7px!important;bottom:32px!important}
+body #mapFiltersQuick{position:absolute!important;top:10px!important;right:10px!important;z-index:1000!important;width:auto!important;min-width:100px!important;display:flex!important;gap:7px!important;padding:0 11px!important;align-items:center!important;justify-content:center!important;font:700 13px/1.2 system-ui,sans-serif!important}
+body #mapFiltersQuick svg{width:19px!important;height:19px!important;flex:0 0 19px!important}
+body #page-explore .maplibregl-ctrl-bottom-left{left:0!important;bottom:0!important;max-width:100%!important;z-index:30!important}
+body #page-explore .maplibregl-ctrl-attrib{margin:0!important;padding:1px 5px!important;border-radius:0!important;min-height:0!important;max-width:100%!important;background:#ffffffde!important;font:10px/16px system-ui,sans-serif!important;box-shadow:none!important}
+body #page-explore .maplibregl-ctrl-attrib a{font:inherit!important;color:#344c3d!important}
+body #areaModal .location-heading{padding:10px 14px!important}
+body #areaModal .location-heading h2{font-size:20px!important;line-height:24px!important}
+body #areaModal .popup-scroll{padding:8px 14px 12px!important;scroll-padding-block:12px}
+body #areaModal .fmn-unified-section{padding:8px 0 12px!important;margin:0 0 8px!important;border:0!important;border-bottom:1px solid #e2e9e3!important;border-radius:0!important;box-shadow:none!important;gap:8px!important}
+body #areaModal .fmn-unified-section h3{font-size:16px!important;line-height:21px!important}
+body #areaModal .fmn-section-desc{display:none!important}
+body #areaModal .fmn-unified-grid{gap:8px!important}
+body #areaModal .fmn-search-field{gap:4px!important}
+body #areaModal .fmn-search-label,body #areaModal .field>label{font-size:12px!important;line-height:16px!important}
+body #areaModal .fmn-search-field input,body #areaModal .fmn-search-field select,body #areaModal .fmn-state-field select,body #areaModal #locationSearch,body #areaModal #journeyState,body #areaModal #journeyInput{min-height:44px!important;padding:9px 10px!important;font-size:15px!important;border-radius:9px!important}
+body #areaModal .fmn-vehicle-details{margin-top:0!important;border-radius:10px!important}
+body #areaModal .fmn-vehicle-details summary{min-height:52px!important;padding:8px 10px!important;gap:2px!important}
+body #areaModal .fmn-vehicle-details summary strong{font-size:13px!important}
+body #areaModal .fmn-vehicle-brief{font-size:12px!important;line-height:16px!important}
+body #areaModal .fmn-vehicle-detail-body{padding:10px!important;gap:9px!important}
+body #areaModal .fmn-truck-search{padding:0!important;border:0!important;background:transparent!important;gap:8px!important}
+body #areaModal .fmn-help-note{font-size:12px!important;line-height:17px!important;margin:0!important}
+body #areaModal .fmn-journey-buttons{gap:5px!important;margin:0!important}
+body #areaModal .fmn-journey-label{display:none!important}
+body #areaModal .fmn-journey-choice{min-height:44px!important;padding:8px 10px!important;font-size:14px!important;border-radius:9px!important}
+body #areaModal .fmn-journey-status{font-size:12px!important;line-height:17px!important;margin:0!important}
+body #areaModal .fmn-journey-buttons:has(#fmnJourneyNearby[aria-pressed=true]) .fmn-journey-status,body #areaModal #journeyDestination>p:last-child{display:none!important}
+body #areaModal .fmn-origin-grid{display:grid;grid-template-columns:minmax(100px,.85fr) minmax(0,1.15fr);gap:8px;min-width:0}
+body #areaModal .fmn-origin-grid>.field{min-width:0!important;margin:0!important;gap:4px!important;display:flex!important;flex-direction:column!important}
+body #areaModal .fmn-origin-grid .field>label{min-height:16px}
+body #areaModal .fmn-location-action{min-height:44px!important;padding:8px 10px!important;font-size:14px!important;border-radius:9px!important}
+body #areaModal #areaGps{flex:1;background:#087532!important;color:#fff!important;border:1px solid #087532!important}
+body #areaModal #locationHelp{flex:0 0 auto!important;width:auto!important;min-height:44px!important;padding:8px 12px!important;margin:0!important;font:600 13px/18px system-ui,sans-serif!important;border:1px solid #bdcec1!important;border-radius:9px!important;background:#fff!important;color:#21402d!important}
+body #areaModal .location-recovery:not(:has(:not([hidden]))){display:none!important}
+body #areaModal #locationStatus:empty,body #areaModal .suggestions:empty{display:none!important}
+body #areaModal .fmn-feature-details{min-width:0;border:1px solid #dce6df;border-radius:10px;background:#f7faf7;overflow:hidden}
+body #areaModal .fmn-feature-details summary{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;padding:9px 11px;box-sizing:border-box;cursor:pointer;list-style:none;font:650 13px/18px system-ui,sans-serif;color:#21402d}
+body #areaModal .fmn-feature-details summary::-webkit-details-marker{display:none}
+body #areaModal .fmn-feature-details summary:after{content:'⌄';font-size:17px}
+body #areaModal .fmn-feature-details[open] summary:after{content:'⌃'}
+body #areaModal #regions{padding:8px!important}
+body #areaModal .fmn-refine-form{padding:10px;display:grid;gap:8px;border-top:1px solid #e0e8e2}
+body #areaModal .fmn-refine-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+body #areaModal .fmn-refine-actions button{min-height:44px;padding:8px;border:1px solid #bdcec1;border-radius:9px;background:#fff;color:#21402d;font:650 13px/18px system-ui,sans-serif;cursor:pointer}
+body #areaModal #fmnFeatureApply{background:#087532;color:#fff;border-color:#087532}
+body #areaModal .fmn-feature-status{font:500 12px/17px system-ui,sans-serif!important;margin:0!important;color:#496052!important}
+body #areaModal .fmn-feature-status:empty{display:none}
+body #areaModal .popup-footer{padding:8px 14px!important;display:flex!important;align-items:center!important;gap:12px!important}
+body #areaModal .fmn-features-count{font:600 13px/18px system-ui,sans-serif;color:#52645a;flex:1}
+body #areaModal .popup-footer #areaClose{margin-left:auto!important;min-height:44px!important;min-width:92px!important;padding:8px 16px!important;border-radius:10px!important;background:#087532!important;color:#fff!important;border-color:#087532!important}
+@media(min-width:360px){body #areaModal #fmnUnifiedVehicle>.fmn-unified-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}body #areaModal #fmnUnifiedVehicle>.fmn-unified-grid>.fmn-full{grid-column:auto!important}body #areaModal #fmnUnifiedVehicle>.fmn-unified-grid select{padding-left:8px!important;padding-right:3px!important;font-size:14px!important}}
+@media(max-height:480px){body #areaModal .popup-scroll{padding:6px 14px 10px!important}body #areaModal .location-heading{padding:6px 14px!important}body #areaModal .popup-footer{padding:6px 14px!important}body #mapBottomDock{bottom:22px!important}}
+/* Keep access content out of the station's two-column metric cells. */
+body .station-grid .fmn-station-extras{grid-column:1/-1!important;order:2;min-width:0!important;display:grid!important;gap:8px!important;padding:0!important;background:none!important;border:0!important;text-align:left!important}
+body .fmn-station-access{display:grid!important;gap:8px!important;min-width:0!important;padding:10px 12px!important;border:1px solid #dce6df!important;border-radius:11px!important;background:#f7faf7!important}
+body .fmn-station-access .fmn-canopy-chip{font:650 14px/20px system-ui,sans-serif!important;color:#21402d!important}
+body .fmn-station-access .fmn-access-note{font:500 13px/18px system-ui,sans-serif!important;color:#675521!important}
+body .fmn-station-access .truck-check-button{width:100%!important;min-height:44px!important;margin:0!important;padding:9px 12px!important;font:650 14px/20px system-ui,sans-serif!important;text-decoration:none!important;border-radius:9px!important}
+body #stationModal .best-detail-card{padding:12px 14px!important}
+body #stationModal #stationTitle{font-size:22px!important;line-height:1.25!important;margin:6px 0!important;overflow-wrap:anywhere}
+body #stationModal #stationAddress{font-size:14px!important;line-height:1.4!important;margin:6px 0 12px!important}
+body #stationModal .station-grid{gap:9px!important;margin:10px 0!important}
+body #stationModal .popup-footer{display:flex!important;gap:10px!important;align-items:center!important}
+body #stationModal .popup-footer #stationGo{flex:1!important;width:auto!important;min-height:44px!important;margin:0!important;padding:8px 14px!important;font:750 14px/20px system-ui,sans-serif!important;border-radius:10px!important;background:#087532!important;color:#fff!important}
+body .fmn-access-dialog header{padding:12px 14px!important}
+body .fmn-access-dialog header h2{font:750 20px/25px system-ui,sans-serif!important;margin:0!important}
+body .fmn-access-dialog .nearby-scroll{display:grid!important;gap:12px!important;padding:14px!important;align-content:start!important}
+body .fmn-access-dialog .nearby-scroll h3{font:700 18px/24px system-ui,sans-serif!important;margin:0!important}
+body .fmn-access-dialog .nearby-scroll p{font:400 13px/19px system-ui,sans-serif!important;margin:0!important}
+body .fmn-access-profile{display:flex;flex-wrap:wrap;gap:6px 10px;font:500 13px/19px system-ui,sans-serif;color:#52645a}
+body .fmn-access-profile span{white-space:nowrap}
+body .fmn-access-canopy{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px;background:#f4f8f4;border:1px solid #dce6df;border-radius:10px;font:600 14px/20px system-ui,sans-serif}
+body .fmn-access-canopy strong{font:750 18px/24px system-ui,sans-serif;white-space:nowrap;color:#21402d}
+body .fmn-access-dialog .nearby-warning{font:500 13px/19px system-ui,sans-serif!important;padding:10px 12px!important;margin:0!important;border-radius:10px!important}
+body .fmn-access-contacts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+body .fmn-access-contacts .truck-contact-link{display:flex!important;align-items:center;justify-content:center;min-width:0!important;min-height:44px!important;padding:9px 10px!important;margin:0!important;border-radius:9px!important;font:650 13px/19px system-ui,sans-serif!important;text-align:center!important;text-decoration:none!important}
+body .fmn-access-dialog footer{padding:8px 14px!important;gap:8px!important}
+body .fmn-access-dialog footer button{min-height:44px!important;font-size:14px!important;padding:8px 12px!important}
+body .fmn-access-dialog .truck-source-date,body .fmn-access-dialog .truck-source-date a{font-size:12px!important;line-height:18px!important;color:#627167!important}
