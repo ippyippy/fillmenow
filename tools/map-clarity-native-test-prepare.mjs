@@ -4,4 +4,7 @@ const file='android/app/src/androidTest/java/au/com/fillmenow/app/NativePolishTe
 for(const [old,next] of [['assertEquals("64",json("document.querySelector(\'.topbar.app-topbar\').getBoundingClientRect().height"))','assertEquals("56",json("document.querySelector(\'.topbar.app-topbar\').getBoundingClientRect().height"))'],['assertEquals("68",json("document.querySelector(\'.bottom-nav\').getBoundingClientRect().height"))','assertEquals("60",json("document.querySelector(\'.bottom-nav\').getBoundingClientRect().height"))'],['screen("08-explore-landscape");assertEquals("56"','screen("08-explore-landscape");assertEquals("50"']]){assert(s.includes(old));s=s.replace(old,next);}
 const old='tap("#mapStationCount");waitFor("document.body.dataset.page===\'options\'",10);';
 assert(s.includes(old));s=s.replace(old,'assertEquals("Truck-only is mandatory in native app","\\\"truckstops\\\"",json("FMNNearbyUI.getFilters().access"));\n   '+old);
-fs.writeFileSync(file,s);console.log('Native GPS test unchanged; visual expected sizes now match 1.2.2; added native truck-only assertion.');
+fs.writeFileSync(file,s);
+// page.evaluate awaits returned Promises; deliberately start the real refresh without returning it so its loading state can be measured.
+const browser='tools/native-map-clarity-test.cjs';let test=fs.readFileSync(browser,'utf8');assert(test.includes('await p.evaluate(()=>FD.refresh());'));test=test.replace('await p.evaluate(()=>FD.refresh());','await p.evaluate(()=>{FD.refresh();});');fs.writeFileSync(browser,test);
+console.log('Native GPS test unchanged; visual sizes match 1.2.2; native truck-only and in-flight refresh assertions retained.');
