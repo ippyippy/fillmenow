@@ -1,0 +1,72 @@
+/* Native 1.2.2: one compact visual system; never override MapLibre's transform. */
+:root{--fmn-header:56px;--fmn-nav:60px;--fmn-ink:#15241b;--fmn-muted:#526057;--fmn-green:#087532;--fmn-line:#d8e2db;--fmn-surface:#f5f8f5}
+body{color:var(--fmn-ink);font-family:system-ui,-apple-system,'Segoe UI',sans-serif}
+body .topbar.app-topbar{padding:4px 14px!important;gap:10px!important}
+body .brand-copy strong{font-size:26px!important;letter-spacing:-.9px!important;font-weight:750!important}
+body .droplet-mark,body .droplet-mark svg{width:29px!important;height:35px!important;flex-basis:29px!important}
+body .topbar.app-topbar .top-area{width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important;flex-basis:44px!important;border-radius:12px!important}
+body .phone-page-head{height:52px!important;min-height:52px!important;padding:6px 14px!important}
+body .phone-page-head .mini-wordmark{font-size:22px!important}
+body .bottom-nav .nav{height:50px!important;min-height:48px!important;font-size:12px!important;gap:2px!important}
+body .bottom-nav .nav span{font-size:12px!important;line-height:16px!important}
+body .bottom-nav .nav svg{width:22px!important;height:22px!important}
+body #page-explore .map-tools-bottom{top:10px!important;right:10px!important;gap:7px!important}
+body[data-page=explore] #page-explore .map-tools-bottom #recenterBtn{width:110px!important;max-width:110px!important;min-width:110px!important;height:44px!important;min-height:44px!important;padding:6px 8px!important;border-radius:12px!important}
+body[data-page=explore] #page-explore .map-tools-bottom #mapSettingsBtn{width:44px!important;height:44px!important;min-height:44px!important}
+body #nativeStatus{top:10px;left:10px;right:130px;min-height:36px;max-width:205px;font-size:12px;line-height:16px;padding:7px 9px;border-radius:10px}
+body #page-explore #mapFilterScope{display:none!important}
+body #mapBottomDock{position:absolute;left:10px;bottom:10px;max-width:calc(100% - 108px);display:flex;gap:7px;align-items:center;z-index:1000;pointer-events:auto}
+body #page-explore #mapBottomDock #mapStationCount{position:static!important;max-width:none!important;width:auto!important;min-width:0!important;min-height:44px!important;height:44px!important;margin:0!important;padding:8px 12px!important;font-size:13px!important;line-height:20px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;border-radius:14px!important;flex:1 1 auto}
+body #mapFiltersQuick{width:44px;height:44px;min-width:44px;border:1px solid var(--fmn-line);border-radius:14px;background:#fff;color:var(--fmn-green);display:grid;place-items:center;box-shadow:0 2px 9px #15241b18;cursor:pointer}
+body #mapFiltersQuick svg{width:22px;height:22px}
+body #page-explore .maplibregl-ctrl-bottom-right{right:10px!important;bottom:104px!important}
+/* Prices and logos sit side by side instead of vertically stacked tiles. */
+body #page-explore #exploreMap .price-marker.station-pin.pin-detail{width:92px!important;min-width:92px!important;max-width:92px!important;height:40px!important;min-height:40px!important;max-height:40px!important;display:flex!important;flex-direction:row!important;gap:5px!important;padding:4px 6px!important;border-radius:10px!important;border-width:1px!important;overflow:visible!important;animation:none!important;transition:none!important;box-shadow:0 2px 5px #10201528!important}
+body #page-explore #exploreMap .price-marker.station-pin.pin-detail .brand-mark{width:27px!important;min-width:27px!important;height:28px!important;min-height:28px!important;flex:0 0 27px!important;overflow:hidden!important;border-radius:4px!important}
+body #page-explore #exploreMap .price-marker.station-pin .brand-mark img{width:100%!important;height:100%!important;object-fit:contain!important;animation:none!important;transition:none!important}
+body #page-explore #exploreMap .price-marker.station-pin.pin-detail .pin-price{font-size:16px!important;line-height:22px!important;letter-spacing:-.4px!important;padding:0!important;white-space:nowrap!important;font-variant-numeric:tabular-nums!important}
+body #page-explore #exploreMap .price-marker.station-pin .pin-price small{font-size:10px!important;line-height:1!important}
+body #page-explore #exploreMap .price-marker.station-pin.cheapest:not(.best).pin-detail{width:96.6px!important;min-width:96.6px!important;max-width:96.6px!important;height:42px!important;min-height:42px!important;max-height:42px!important;border-color:#54976b!important}
+body #page-explore #exploreMap .price-marker.station-pin.best.pin-detail{width:110.4px!important;min-width:110.4px!important;max-width:110.4px!important;height:48px!important;min-height:48px!important;max-height:48px!important;border:2px solid #087532!important;background:#effbf3!important;box-shadow:0 0 0 2px #08753222,0 3px 7px #10201530!important}
+body #page-explore #exploreMap .price-marker.station-pin.best.pin-detail .brand-mark{width:31px!important;min-width:31px!important;height:32px!important;flex:0 0 31px!important}
+body #page-explore #exploreMap .price-marker.station-pin.best.pin-detail .pin-price{font-size:18px!important;line-height:24px!important;padding:0 3px!important;background:#087532!important;color:#fff!important}
+body #page-explore #exploreMap .price-marker.station-pin.pin-compact{width:52px!important;min-width:52px!important;max-width:52px!important;height:34px!important;min-height:34px!important;max-height:34px!important;padding:3px 6px!important;border-radius:8px!important}
+body #page-explore #exploreMap .price-marker.station-pin.pin-compact .brand-mark{width:38px!important;min-width:38px!important;height:26px!important;min-height:26px!important;flex:0 0 26px!important}
+body #page-explore #exploreMap .price-marker.station-pin.cheapest:not(.best).pin-compact{width:54.6px!important;min-width:54.6px!important;max-width:54.6px!important;height:35.7px!important;min-height:35.7px!important;max-height:35.7px!important}
+body #page-explore #exploreMap .price-marker.station-pin.best.pin-compact{width:62.4px!important;min-width:62.4px!important;max-width:62.4px!important;height:40.8px!important;min-height:40.8px!important;max-height:40.8px!important}
+body #page-explore #exploreMap .station-pin .pin-secondary-tags,body #page-explore #exploreMap .station-pin:not(.best) .pin-value-label{display:none!important}
+body #page-explore #exploreMap .station-pin.best .pin-value-label{top:-16px!important;line-height:13px!important;font-size:10px!important;border-radius:4px!important;padding:1px 4px!important}
+body #page-explore #exploreMap .station-pin .brand-word{font-size:8px!important}
+/* Transient Dash dialogue has no hitbox covering the map; only its button is interactive. */
+body #dashSpeech{position:fixed;z-index:1040;width:224px;max-width:calc(100vw - 24px);border:1px solid #bfd0c3;border-radius:16px;background:#fff;color:#173c27;padding:11px 13px;box-shadow:0 3px 12px #10201522;text-align:left;cursor:pointer;box-sizing:border-box;font:500 13px/1.4 system-ui,sans-serif}
+body #dashSpeech strong{display:block;font-size:14px;line-height:1.35;font-weight:700;margin-bottom:3px}
+body #dashSpeech small{display:block;font-size:12px;line-height:1.35;color:#526057;margin-top:4px}
+body #dashSpeechTail{position:fixed;inset:0;width:100vw;height:100dvh;pointer-events:none;z-index:1040;overflow:visible}
+body #dashSpeech[hidden],body #dashSpeechTail[hidden]{display:none!important}
+body #priceRefreshNotice{position:absolute;left:10px;top:56px;max-width:calc(100% - 142px);padding:5px 8px;border-radius:8px;color:#70490e;background:#fff6e1;font-size:11px;line-height:16px;z-index:998;pointer-events:none}
+body #priceRefreshNotice[hidden]{display:none!important}
+/* Lists and controls: distinct semantics, readable text and no giant duplicate warnings. */
+body #page-options .filter-strip{padding:7px 12px!important;min-height:62px!important;gap:8px!important;background:#f5f8f5!important;border-bottom:1px solid var(--fmn-line)!important}
+body #page-options .filter-strip label,body #page-options .filter-strip button{padding:3px 8px!important;min-height:44px!important;flex:1;min-width:0!important}
+body #page-options .filter-strip select,body #page-options .filter-strip b{font:600 14px/1.35 system-ui,sans-serif!important;background:transparent!important;width:100%!important;max-width:100%!important}
+body .phone-page-body{padding-top:16px!important}
+body .phone-page-body h1{font-size:25px!important;line-height:1.25!important;font-weight:750!important}
+body #page-options .option-row{margin-bottom:10px!important;border:1px solid var(--fmn-line)!important;border-radius:14px!important;grid-template-columns:36px minmax(0,1fr) 48px!important;padding:12px!important;gap:10px!important;min-height:0!important}
+body #page-options .option-row.best{border:2px solid #087532!important}
+body #page-options .option-row .option-brand,body #page-options .option-row .brand-rank{width:36px!important}
+body #page-options .option-row .option-main>b{font-size:15px!important;line-height:1.35!important;font-weight:700!important}
+body #page-options .option-row .option-main>strong{font-size:26px!important;line-height:1.2!important;font-weight:750!important;margin-top:5px!important;color:var(--fmn-ink)!important}
+body #page-options .option-row.best .option-main>strong{color:#087532!important}
+body #page-options .option-row .option-main .value-badge{background:#087532!important;color:#fff!important;font-size:11px!important;line-height:16px!important;margin:0 0 6px!important;padding:3px 6px!important}
+body #page-options .option-row .option-main .station-trait{font-size:11px!important;line-height:16px!important;padding:3px 6px!important;color:#214c32!important}
+body #page-options .option-row .option-main .nearby-badge{font-size:12px!important;line-height:17px!important;color:#665324!important;background:#fff7e6;border-radius:6px;padding:3px 6px;display:inline-block!important}
+body #page-options .option-row .option-go{width:48px!important;min-width:48px!important;min-height:44px!important;font-size:14px!important}
+body #page-options .truck-check-button{font-size:12px!important;min-height:36px!important;padding:6px 9px!important;margin:6px 0 0!important}
+body #nativeTruckDetails{background:#f5f8f5;font-size:13px;padding:6px 12px;margin:8px 0}
+body #nativeTruckDetails summary{min-height:36px}
+body .nearby-dialog p,body .journey-dialog p,body .popup-scroll p{font-size:14px!important;line-height:1.45!important}
+body .nearby-dialog .nearby-warning{font-size:12px!important;padding:8px 10px!important}
+body .nearby-field,body .field label{font-size:13px!important;line-height:1.4!important;font-weight:600!important;letter-spacing:0!important}
+body .nearby-field input,body .nearby-field select,body .field input,body .field select{font-weight:500!important;min-height:46px!important;border:1px solid #bac9be!important;background:#fbfcfa!important}
+@media(max-width:359px){body .brand-copy strong{font-size:24px!important}body .topbar.app-topbar{padding-inline:12px!important}body #mapBottomDock{max-width:calc(100% - 108px)}body #page-explore #mapBottomDock #mapStationCount{font-size:12px!important;padding-inline:10px!important}body #nativeStatus{font-size:11px;line-height:15px}}
+@media(max-height:480px) and (min-width:600px){:root{--fmn-header:50px;--fmn-nav:56px}body .bottom-nav .nav{height:46px!important}body #nativeStatus{right:334px;max-width:240px}body #dashSpeech{width:224px;font-size:12px;padding:8px 11px}body #page-explore .maplibregl-ctrl-bottom-right{right:184px!important;top:10px!important;bottom:auto!important}}
