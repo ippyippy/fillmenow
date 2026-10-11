@@ -51,9 +51,14 @@ public class NativeMapTest {
  private File dir(){File d=new File(InstrumentationRegistry.getInstrumentation().getTargetContext().getExternalFilesDir(null),"native-map-qa");d.mkdirs();return d;}
  private void screen(String name){device.takeScreenshot(new File(dir(),name+".png"));}
  private void grantDialog(boolean allow)throws Exception{
-  UiObject2 choice=device.wait(Until.findObject(By.res(Pattern.compile(".*:id/permission_"+(allow?"allow_foreground_only":"deny")+"_button"))),20000);assertNotNull("Expected the actual Android permission dialog",choice);
-  if(allow){UiObject2 precise=device.findObject(By.text("Precise"));if(precise!=null)precise.click();}
+  BySelector button=By.res(Pattern.compile(".*:id/permission_"+(allow?"allow_foreground_only":"deny")+"_button")).enabled(true);
+  UiObject2 choice=device.wait(Until.findObject(button),20000);assertNotNull("Expected the actual Android permission dialog",choice);
+  if(allow){UiObject2 precise=device.findObject(By.text("Precise"));if(precise!=null)precise.click();device.waitForIdle(1000);}
+  // Selecting Precise can recreate permission-controller nodes. Reacquire the visible button.
+  choice=device.wait(Until.findObject(button),5000);assertNotNull("Permission choice must remain visible",choice);
   screen(allow?"02-android-precise-allow":"01-android-permission-deny");choice.click();
+  assertTrue("Android permission dialog did not finish",device.wait(Until.gone(button),10000));
+  if(allow){Context context=InstrumentationRegistry.getInstrumentation().getTargetContext();long end=SystemClock.elapsedRealtime()+5000;while(context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED&&SystemClock.elapsedRealtime()<end)SystemClock.sleep(100);assertEquals("Android must really grant precise permission",PackageManager.PERMISSION_GRANTED,context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION));}
  }
  @Test public void nativePositionsMoveTheExistingMap()throws Exception{
   assertTrue("CI emulator only",android.os.Build.FINGERPRINT.contains("generic")||android.os.Build.MODEL.contains("sdk")||android.os.Build.PRODUCT.contains("sdk"));device.executeShellCommand("cmd location set-location-enabled true");scenario=ActivityScenario.launch(MainActivity.class);
