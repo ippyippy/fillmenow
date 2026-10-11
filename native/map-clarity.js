@@ -2,7 +2,7 @@
 (function(){'use strict';
 let bubble,tail,dock,quick,timer,frame=0,lastKey='',suppressed='',scope=null,map=null;
 const $=id=>document.getElementById(id),clamp=(v,a,b)=>Math.max(a,Math.min(Math.max(a,b),v));
-function hide(){if(bubble)bubble.hidden=true;if(tail)tail.hidden=true;clearTimeout(timer);if(scope)suppressed=scope.key;}
+function hide(){if(bubble)bubble.hidden=true;if(tail)tail.setAttribute('hidden','');clearTimeout(timer);if(scope)suppressed=scope.key;}
 function position(){frame=0;if(!bubble||bubble.hidden)return;const host=$('exploreMap'),sheet=$('mobileSheet');if(!host||!sheet||document.body.dataset.page!=='explore'){hide();return;}
  const m=host.getBoundingClientRect(),s=sheet.getBoundingClientRect();let mouth;
  if(sheet.classList.contains('is-collapsed'))mouth={x:s.left+s.width*.56,y:s.top+s.height*.68};
@@ -19,7 +19,7 @@ function position(){frame=0;if(!bubble||bubble.hidden)return;const host=$('explo
  if(below||above){const yy=below?b.bottom-1:b.top+1,xx=clamp(mouth.x,b.left+18,b.right-18);a=[xx-6,yy];c=[xx+6,yy];}
  else{const xx=mouth.x>=b.right?b.right-1:b.left+1,yy=clamp(mouth.y,b.top+14,b.bottom-14);a=[xx,yy-6];c=[xx,yy+6];}
  tail.setAttribute('viewBox','0 0 '+innerWidth+' '+innerHeight);tail.querySelector('path').setAttribute('d','M '+a.join(' ')+' L '+Math.round(mouth.x)+' '+Math.round(mouth.y)+' L '+c.join(' ')+' Z');
- tail.hidden=false;
+ tail.removeAttribute('hidden');
 }
 function queue(){if(!frame)frame=requestAnimationFrame(position);}
 function receive(detail){if(!detail)return;scope=detail;window.FMNMapScope=detail;
@@ -31,6 +31,7 @@ function receive(detail){if(!detail)return;scope=detail;window.FMNMapScope=detai
  $('dashSpeechTitle').textContent=title;
  $('dashSpeechBody').textContent=detail.truck?'Showing recorded truck facilities.':detail.deals?'Showing checked offers.':'Showing your filtered stations.';
  $('dashSpeechFoot').textContent=(detail.destination?'Direction filter, not a road route. ':'')+'Tap for filters.';
+ bubble.setAttribute('aria-label',title+'. '+$('dashSpeechBody').textContent+' '+$('dashSpeechFoot').textContent);
  if(changed&&suppressed!==detail.key&&document.body.dataset.page==='explore'){bubble.hidden=false;queue();clearTimeout(timer);timer=setTimeout(hide,8000);}
  else if(!bubble.hidden)queue();
 }
@@ -38,7 +39,7 @@ function bindMap(){const candidate=window.FMNJourneyApp?.getMap();if(!candidate|
 function init(){const host=document.querySelector('#page-explore .map-shell'),count=$('mapStationCount');if(!host||!count)return;
  dock=document.createElement('div');dock.id='mapBottomDock';host.append(dock);dock.append(count);
  quick=document.createElement('button');quick.id='mapFiltersQuick';quick.type='button';quick.setAttribute('aria-label','Open map filters');quick.setAttribute('aria-haspopup','dialog');quick.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="6" r="2" fill="white" stroke="currentColor" stroke-width="2"/><circle cx="16" cy="12" r="2" fill="white" stroke="currentColor" stroke-width="2"/><circle cx="10" cy="18" r="2" fill="white" stroke="currentColor" stroke-width="2"/></svg>';quick.onclick=()=>{hide();window.FMNNearbyUI?.openFilters();};dock.append(quick);
- tail=document.createElementNS('http://www.w3.org/2000/svg','svg');tail.id='dashSpeechTail';tail.setAttribute('aria-hidden','true');tail.innerHTML='<path fill="white" stroke="#bfd0c3" stroke-width="1"/>';tail.hidden=true;document.body.append(tail);
+ tail=document.createElementNS('http://www.w3.org/2000/svg','svg');tail.id='dashSpeechTail';tail.setAttribute('aria-hidden','true');tail.innerHTML='<path fill="white" stroke="#bfd0c3" stroke-width="1"/>';tail.setAttribute('hidden','');document.body.append(tail);
  bubble=document.createElement('button');bubble.id='dashSpeech';bubble.type='button';bubble.hidden=true;bubble.setAttribute('aria-label','Dash explains the active map filters. Tap to change filters.');bubble.innerHTML='<strong id="dashSpeechTitle"></strong><span id="dashSpeechBody"></span><small id="dashSpeechFoot"></small>';bubble.onclick=()=>{hide();window.FMNNearbyUI?.openFilters();};document.body.append(bubble);
  const sheet=$('mobileSheet');if(sheet)new MutationObserver(queue).observe(sheet,{attributes:true,attributeFilter:['class','style']});
  document.addEventListener('fmn:scope-change',e=>receive(e.detail));document.addEventListener('fmn:map-ready',bindMap);bindMap();
