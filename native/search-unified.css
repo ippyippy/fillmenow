@@ -1,0 +1,26 @@
+/* Native unified search. Safe text wrapping and equal-width mobile fields. */
+#areaModal .modal,#areaModal .popup-scroll{min-width:0;max-width:100%;box-sizing:border-box}
+#areaModal .popup-scroll{overflow-x:hidden;overscroll-behavior:contain;padding-inline:16px!important}
+#areaModal .popup-scroll *,#areaModal .popup-scroll *:before,#areaModal .popup-scroll *:after{box-sizing:border-box;min-width:0}
+#areaModal h2{font-size:clamp(21px,5.2vw,26px)!important;line-height:1.2!important;overflow-wrap:break-word;letter-spacing:-.5px}
+#areaModal p{font-size:14px!important;line-height:1.45!important;margin-block:8px 12px!important}
+#areaModal .form-grid,#areaModal .journey-fields,#areaModal .unified-vehicle-fields .form-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+#areaModal .journey-fields>*{grid-column:1/-1}
+#areaModal .field,#areaModal .field label{display:block!important;width:100%!important;max-width:100%!important;overflow-wrap:anywhere;font-size:12px!important;line-height:1.4!important}
+#areaModal input,#areaModal select,#areaModal button{max-width:100%;min-width:0}
+#areaModal .field input,#areaModal .field select{width:100%!important;min-height:46px!important;font-size:15px!important;border-radius:10px!important;padding:8px 10px!important}
+#unifiedVehicle{padding:14px 0;border-top:1px solid #d8e2db;display:grid;gap:10px}
+#unifiedVehicle h3{margin:0;font-size:18px;font-weight:750;line-height:1.25;color:#15241b}
+#unifiedVehicle p{margin:0!important;font-size:13px!important;color:#526057}
+#unifiedVehicle #drawer-vehicle{position:static!important;display:block!important;width:100%!important;max-width:100%!important;overflow:visible!important;padding:0!important;background:transparent!important;transform:none!important}
+#unifiedVehicle #drawer-vehicle>h2,#unifiedVehicle #drawer-vehicle>p{display:none!important}
+#unifiedVehicle .preset-row{display:flex!important;gap:7px!important;flex-wrap:wrap!important;margin:0!important}
+#unifiedVehicle .preset-row .preset{font-size:13px!important;line-height:1.25!important;min-height:42px!important;padding:7px 10px!important;flex:1 1 auto}
+#unifiedVehicle .form-grid{margin-top:8px!important}
+#unifiedVehicle .full-btn{width:100%;min-height:46px!important;margin-top:12px!important;font-size:14px!important}
+#unifiedVehicle #truckProfile{max-width:100%;overflow-wrap:anywhere}
+#unifiedVehicle #truckProfile .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+#unifiedVehicle .unified-radius{margin-top:2px}
+#areaModal .popup-footer{background:#fff;z-index:2}
+#areaModal .popup-footer button{min-height:46px}
+@media(max-width:359px){#areaModal .form-grid,#areaModal #unifiedVehicle .form-grid,#unifiedVehicle #truckProfile .form-grid{grid-template-columns:minmax(0,1fr)!important}}
