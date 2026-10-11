@@ -49,7 +49,7 @@ for(const name of ['native-unified-search-test.cjs','native-ux-controls-test.cjs
   test=replace(test,"#areaModal .fmn-unified-section h3","#areaModal .fmn-main-feature>summary h3");
  }
  if(name==='native-map-clarity-test.cjs'){
-  test=replace(test,'assert.equal(g.header.h,height<480?50:56);assert.equal(g.nav.h,height<480?56:60);','assert.ok(Math.abs(g.header.h-(height<480?50:56)*.8)<.1);assert.ok(Math.abs(g.nav.h-(height<480?56:60)*.8)<.1);');
+  test=replace(test,'assert.equal(g.header.h,height<480?50:56);assert.equal(g.nav.h,height<480?56:60);','assert.ok(Math.abs(g.header.h-(height<480?50:56)*.8)<.1,JSON.stringify(g));assert.ok(Math.abs(g.nav.h-(height<480?56:60)*.8)<.1,JSON.stringify(g));');
  }
  if(name==='native-ux-controls-test.cjs'){
   test=replace(test,'x.h>=48','x.h>=38.3');test=replace(test,'have 48px touch targets','retain proportionally scaled touch targets');test=replace(test,'spacing.inside>=48&&spacing.tail>=20&&spacing.nav.every(x=>x>=48)','spacing.inside>=38.3&&spacing.tail>=15.9&&spacing.nav.every(x=>x>=38.3)');
