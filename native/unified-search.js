@@ -49,6 +49,7 @@ function build(){
  if($('fmnUnifiedVehicle'))return true;
  const title=area.querySelector('.location-heading h2');if(title)title.textContent='Find fuel';
  area.setAttribute('aria-label','Search fuel, vehicle and journey');
+ const destinationOption=$('journeyMode')?.querySelector('option[value="destination"]');if(destinationOption)destinationOption.textContent='Add destination';
  const body=Array.from(scroll.children),journey=scroll.querySelector('.journey-fields');
  const fuelField=$('modalFuel').closest('.field'),stateField=$('stateSelect').closest('.field');
  const vehicle=node('section','fmn-unified-section');vehicle.id='fmnUnifiedVehicle';
