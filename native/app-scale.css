@@ -1,7 +1,5 @@
-/* Scale the installed app at normal browser zoom. Viewport dimensions are
-   compensated by the packaging step so maps and overlays still fill the screen. */
-:root{--fmn-ui-scale:.8}
-body{zoom:var(--fmn-ui-scale)}
+/* Pixel styles are compiled to 80%; browser and gesture coordinates stay 1:1. */
+html{font-size:80%}
 
 body #areaModal .popup-scroll{display:flex!important;flex-direction:column!important;gap:10px!important}
 body #areaModal .fmn-main-feature{flex:none}

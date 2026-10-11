@@ -21,6 +21,7 @@ jobs:
           node tools/native-scaled-panels-prepare.mjs
           node tools/truck-network-test.cjs
           node tools/cheapest-band-test.cjs
+          node tools/native-style-scale-test.mjs
           node tools/direct-native-unit.mjs
           git diff --check
           git diff --exit-code 244f8f1aadc10b1bcf0044c57371a8a8ba1e0ca4 -- backend ios native/entry.mjs native/location-facade.mjs
@@ -32,9 +33,6 @@ jobs:
       - name: Verify button navigation, layout spacing, unified Search, markers and settings
         env:
           NODE_PATH: /tmp/fmn-layout/node_modules
-          # This packaging recipe targets Chromium-based Android WebView.
-          # WebKit exposes pre-zoom DOM coordinates and is not an Android runtime.
-          CHROMIUM_ONLY: '1'
         run: |
           node tools/native-map-clarity-test.cjs
           node tools/native-unified-search-test.cjs
